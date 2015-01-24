@@ -210,6 +210,7 @@ class GLDrawDevice {
     
     GLFramebuffer mainBuffer 
     GLTexture colorTexture
+    GLTexture normalTexture
     GLTexture depthTexture
 
     static GLDrawDevice getInstance() {
@@ -229,8 +230,10 @@ class GLDrawDevice {
 
         .mainBuffer = new GLFramebuffer()
         .colorTexture = GLTexture.create(w/4, h/4, 0) // 0 = RGBA8
+        .normalTexture = GLTexture.create(w/4, h/4, 0) // 0 = RGBA8
         .depthTexture = GLTexture.create(w/4, h/4, 3) // 3 = DEPTH
         .mainBuffer.addTarget(.colorTexture)
+        .mainBuffer.addTarget(.normalTexture)
         .mainBuffer.addTarget(.depthTexture)
 
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f)
@@ -273,8 +276,6 @@ class GLDrawDevice {
 
         glViewport(0, 0, .w/4, .h/4)
         .mainBuffer.bind()
-        glClear(GL_COLOR_BUFFER_BIT)
-        glClear(GL_DEPTH_BUFFER_BIT)
 
         if(!program) {
             program = new GLProgram(pack "glsl/mesh.vs", pack "glsl/mesh.fs")
@@ -301,7 +302,7 @@ class GLDrawDevice {
         static GLProgram program
 
         if(!program) {
-            program = new GLProgram(pack "glsl/simple.vs", pack "glsl/title.fs")
+            program = new GLProgram(pack "glsl/simple.vs", pack "glsl/simple.fs")
         }
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0)
@@ -328,9 +329,19 @@ class GLDrawDevice {
         .runSimpleProgram(.quad, .colorTexture, mat4())
     }
 
+    void clearBuffer() {
+        .mainBuffer.bind()
+        glClear(GL_COLOR_BUFFER_BIT)
+        glClear(GL_DEPTH_BUFFER_BIT)
+    }
+
     void clear() {
         glBindFramebuffer(GL_FRAMEBUFFER, 0)
         glClear(GL_COLOR_BUFFER_BIT)
+        glClear(GL_DEPTH_BUFFER_BIT)
+    }
+
+    void clearDepth() {
         glClear(GL_DEPTH_BUFFER_BIT)
     }
 }

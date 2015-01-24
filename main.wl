@@ -13,6 +13,7 @@ import "random.wl"
 
 import "man.wl"
 import "title.wl"
+import "vec.wl"
 
 
 undecorated int printf(char^ fmt, ...);
@@ -24,6 +25,9 @@ GLTexture tex
 DuckMan man
 Title title
 
+GLMesh house_inside_mesh
+GLTexture house_inside_tex
+
 void init() {
     SDLWindow window = new SDLWindow(640, 480, "test")
     Image i = loadTGA(new StringFile(pack "res/test.tga"))
@@ -31,6 +35,11 @@ void init() {
     glDevice = new GLDrawDevice(640, 480)
     man = new DuckMan()
     title = new Title()
+
+    i = loadTGA(new StringFile(pack "res/house_inside.tga"))
+    house_inside_tex = new GLTexture(i)
+    Mesh m = loadMdl(new StringFile(pack "res/house_inside.mdl"))
+    house_inside_mesh = new GLMesh(m)
 }
 
 void input() {
@@ -60,10 +69,12 @@ void update(float dt) {
 }
 
 void draw() {
+    glDevice.clearBuffer()
     glDevice.clear()
     tex.bind()
-    //man.draw()
-    title.draw()
+    //title.draw()
+    glDevice.runMeshProgram(house_inside_mesh, house_inside_tex, mat4())
+    man.draw()
     glDevice.drawQuad()
 
     SDL_GL_SwapBuffers()
