@@ -52,16 +52,15 @@ void input() {
 }
 
 void update(float dt) {
+    glDevice.update(dt)
     man.update(dt)
 }
 
 void draw() {
-    glClear(GL_COLOR_BUFFER_BIT)
-    glClear(GL_DEPTH_BUFFER_BIT)
-
+    glDevice.clear()
     tex.bind()
     man.draw()
-    //glDevice.drawQuad()
+    glDevice.drawQuad()
 
     SDL_GL_SwapBuffers()
 }

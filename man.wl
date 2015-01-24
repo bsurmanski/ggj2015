@@ -57,6 +57,6 @@ class DuckMan : Entity {
         mat = mat.rotate(.rotation, axis)
         mat = mat.translate(.position)
 
-        dev.runSimpleProgram(.mesh, .texture, mat)
+        dev.runMeshProgram(.mesh, .texture, mat)
     }
 }

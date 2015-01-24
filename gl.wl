@@ -60,6 +60,7 @@ class GLProgram {
 
 class GLTexture {
     GLuint id
+    int kind
     int w
     int h
 
@@ -81,6 +82,7 @@ class GLTexture {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 
         img.width(), img.height(), 0, GL_BGRA, GL_UNSIGNED_BYTE, 
         img.pixels)
+        .kind = RGBA8
     }
 
     // XXX workaround. function overloading on constructor not done yet
@@ -103,6 +105,7 @@ class GLTexture {
         }
 
         GLTexture tex = new GLTexture
+        tex.kind = kind
         glGenTextures(1, &tex.id)
         glBindTexture(GL_TEXTURE_2D, tex.id)
         tex.w = w
@@ -111,8 +114,8 @@ class GLTexture {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 
-        w, h, 0, GL_BGRA, GL_UNSIGNED_BYTE, 
+        glTexImage2D(GL_TEXTURE_2D, 0, iformat, 
+        w, h, 0, format, type, 
         null)
         return tex
     }
@@ -181,9 +184,18 @@ class GLFramebuffer {
 
     void addTarget(GLTexture t) {
         glBindFramebuffer(GL_FRAMEBUFFER, .id)
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + .ntargets,
-            GL_TEXTURE_2D, t.id, null)
-        .ntargets++
+
+        if(t.kind == 0 or t.kind == 1 or t.kind == 2) {
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + .ntargets,
+                GL_TEXTURE_2D, t.id, null)
+            .ntargets++
+        } else if(t.kind == 3) {
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+                GL_TEXTURE_2D, t.id, null)
+        } else if(t.kind == 4) {
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
+                GL_TEXTURE_2D, t.id, null)
+        }
     }
 }
 
@@ -194,9 +206,11 @@ class GLDrawDevice {
 
     int w
     int h
+    float tick
     
     GLFramebuffer mainBuffer 
     GLTexture colorTexture
+    GLTexture depthTexture
 
     static GLDrawDevice getInstance() {
         return instance
@@ -214,7 +228,10 @@ class GLDrawDevice {
         .h = h
 
         .mainBuffer = new GLFramebuffer()
-        .colorTexture = GLTexture.create(w, h, 0) // 0 = RGBA8
+        .colorTexture = GLTexture.create(w/4, h/4, 0) // 0 = RGBA8
+        .depthTexture = GLTexture.create(w/4, h/4, 3) // 3 = DEPTH
+        .mainBuffer.addTarget(.colorTexture)
+        .mainBuffer.addTarget(.depthTexture)
 
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f)
         glEnable(GL_TEXTURE_2D)
@@ -223,7 +240,10 @@ class GLDrawDevice {
         glEnable(GL_DEPTH_TEST)
         glDisable(GL_SCISSOR_TEST)
 
-        glViewport(0, 0, w, h)
+    }
+
+    void update(float dt) {
+        .tick = dt
     }
 
     void bindStandardAttributes(GLProgram program) {
@@ -249,7 +269,10 @@ class GLDrawDevice {
     void runMeshProgram(GLMesh mesh, GLTexture tex, mat4 matrix) {
         static GLProgram program 
 
+        glViewport(0, 0, .w/4, .h/4)
         .mainBuffer.bind()
+        glClear(GL_COLOR_BUFFER_BIT)
+        glClear(GL_DEPTH_BUFFER_BIT)
 
         if(!program) {
             program = new GLProgram(pack "glsl/mesh.vs", pack "glsl/mesh.fs")
@@ -272,6 +295,7 @@ class GLDrawDevice {
     }
 
     void runSimpleProgram(GLMesh mesh, GLTexture tex, mat4 mat) {
+        glViewport(0, 0, .w, .h)
         static GLProgram program
 
         if(!program) {
@@ -293,12 +317,19 @@ class GLDrawDevice {
         mat4 matrix = persp.mul(mat)
 
         glUniformMatrix4fv(glGetUniformLocation(program.program, "matrix"), 1, GL_TRUE, matrix.ptr())
+        glUniform1f(glGetUniformLocation(program.program, "tick"), .tick)
 
         mesh.draw()
     }
 
     void drawQuad() {
         .runSimpleProgram(.quad, .colorTexture, mat4())
+    }
+
+    void clear() {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0)
+        glClear(GL_COLOR_BUFFER_BIT)
+        glClear(GL_DEPTH_BUFFER_BIT)
     }
 }
 
