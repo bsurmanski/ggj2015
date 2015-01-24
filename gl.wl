@@ -242,6 +242,8 @@ class GLDrawDevice {
 
     }
 
+    GLMesh getQuad() return .quad
+
     void update(float dt) {
         .tick = dt
     }
@@ -299,7 +301,7 @@ class GLDrawDevice {
         static GLProgram program
 
         if(!program) {
-            program = new GLProgram(pack "glsl/simple.vs", pack "glsl/simple.fs")
+            program = new GLProgram(pack "glsl/simple.vs", pack "glsl/title.fs")
         }
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0)

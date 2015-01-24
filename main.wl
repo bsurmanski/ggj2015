@@ -12,6 +12,7 @@ import "collision.wl"
 import "random.wl"
 
 import "man.wl"
+import "title.wl"
 
 
 undecorated int printf(char^ fmt, ...);
@@ -21,6 +22,7 @@ GLDrawDevice glDevice
 GLTexture tex
 
 DuckMan man
+Title title
 
 void init() {
     SDLWindow window = new SDLWindow(640, 480, "test")
@@ -28,6 +30,7 @@ void init() {
     tex = new GLTexture(i)
     glDevice = new GLDrawDevice(640, 480)
     man = new DuckMan()
+    title = new Title()
 }
 
 void input() {
@@ -59,7 +62,8 @@ void update(float dt) {
 void draw() {
     glDevice.clear()
     tex.bind()
-    man.draw()
+    //man.draw()
+    title.draw()
     glDevice.drawQuad()
 
     SDL_GL_SwapBuffers()
