@@ -248,7 +248,7 @@ class GLDrawDevice {
     GLMesh getQuad() return .quad
 
     void update(float dt) {
-        .tick = dt
+        .tick += dt
     }
 
     void bindStandardAttributes(GLProgram program) {

@@ -11,6 +11,8 @@ import "fmt/mdl.wl"
 import "collision.wl"
 import "random.wl"
 import "cookie.wl"
+import "grub.wl"
+import "mouse.wl"
 
 import "man.wl"
 import "title.wl"
@@ -39,6 +41,9 @@ void init() {
     man = new DuckMan()
     title = new Title()
     cookie = new Cookie()
+
+    initMice()
+    initGrubs()
 
     i = loadTGA(new StringFile(pack "res/house_inside.tga"))
     house_inside_tex = new GLTexture(i)
@@ -73,9 +78,14 @@ void update(float dt) {
 
     cookie.update(dt)
 
+    updateMice(dt)
+    updateGrubs(dt)
+
     view = mat4()
+    view = view.translate(vec4(-man.position.v[0], 
+                            -6.0f * man.scale - 1, 
+                            -8.0f * man.scale - man.position.v[2] - 1, 0))
     view = view.rotate(0.5, vec4(1, 0, 0, 0))
-    view = view.translate(vec4(0, -3, -15, 0))
 }
 
 void draw_house() {
@@ -92,8 +102,12 @@ void draw() {
     //title.draw()
     draw_house()
     man.draw(view)
-    cookie.draw(view)
+
+    drawMice(view)
+    drawGrubs(view)
+
     glDevice.drawQuad()
+
 
     SDL_GL_SwapBuffers()
 }
@@ -107,7 +121,7 @@ int main(int argc, char^^ argv)
         update(dt)
         draw()
         SDL_Delay(32)
-        dt += 0.03
+        dt = 0.03
     }
 
     return 0

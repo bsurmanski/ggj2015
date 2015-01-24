@@ -24,8 +24,8 @@ class Cookie : Entity {
         }
     }
 
-    void update(float t) {
-        .tick = t
+    void update(float dt) {
+        .tick += dt
     }
 
     void draw(mat4 view) {

@@ -15,6 +15,7 @@ class DuckMan : Entity {
     static GLTexture texture
     float bounce
     bool moved
+    float scale
 
     this() {
         Image img = loadTGA(new StringFile(pack "res/pillduck.tga"))
@@ -22,13 +23,16 @@ class DuckMan : Entity {
         Mesh m = loadMdl(new StringFile(pack "res/pillduck.mdl"))
         .mesh = new GLMesh(m)
 
-        .position = vec4(0, 0, -1, 1)
+        .scale = 0.2
+        .position = vec4(0, 0, 0, 1)
     }
 
     void update(float dt) {
+        static float tick
+        tick += dt
         float targety = 0.0f
         if(.moved) {
-            targety = fabsf(sin(dt * 10.0f)) / 4.0f
+            targety = fabsf(sin(tick * 10.0f)) / 4.0f
         }
         .position.v[1] = (.position.v[1] + (targety - .position.v[1]) * 0.6f)
         .moved = false
@@ -40,7 +44,7 @@ class DuckMan : Entity {
 
     void step() {
         vec4 axis = vec4(0, 1, 0, 0)
-        vec4 dv = vec4(0, 0, -0.08, 0)
+        vec4 dv = vec4(0, 0, -0.4 * .scale, 0)
         mat4 matrix = mat4()
         matrix = matrix.rotate(.rotation, axis)
         dv = matrix.vmul(dv)
@@ -55,6 +59,7 @@ class DuckMan : Entity {
         mat4 mat = mat4()
         vec4 axis = vec4(0, 1, 0, 0)
         mat = mat.rotate(.rotation, axis)
+        mat = mat.scale(.scale, .scale, .scale)
         mat = mat.translate(.position)
         mat = view.mul(mat)
 

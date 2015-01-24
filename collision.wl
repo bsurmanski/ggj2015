@@ -22,10 +22,11 @@ struct Box2 {
     float[2] pos
     float[2] dim
 
+    /*
     this(float[2] p, float[2] d) {
         .pos = p
         .dim = d
-    }
+    }*/
 
     this(vec4 p, vec4 d) {
         .pos[0] = p.v[0]
@@ -65,10 +66,10 @@ struct Box2 {
         return true
     }
 
-    float[2] minTranslation(Box2 o) {
-        float[2] ret
+    vec4 minTranslation(Box2 o) {
+        vec4 ret
         for(int i = 0; i < 2; i++) {
-            ret[i] = box_dim_mtd(.pos[i], .dim[i], o.pos[i], o.dim[i])
+            ret.v[i] = box_dim_mtd(.pos[i], .dim[i], o.pos[i], o.dim[i])
         }
         return ret
     }
