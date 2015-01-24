@@ -22,7 +22,7 @@ class DuckMan : Entity {
         Mesh m = loadMdl(new StringFile(pack "res/pillduck.mdl"))
         .mesh = new GLMesh(m)
 
-        .position = vec4(0, 0, -5, 1)
+        .position = vec4(0, 0, -1, 1)
     }
 
     void update(float dt) {
@@ -49,13 +49,14 @@ class DuckMan : Entity {
         .moved = true
     }
 
-    void draw() {
+    void draw(mat4 view) {
         GLDrawDevice dev = GLDrawDevice.getInstance()
 
         mat4 mat = mat4()
         vec4 axis = vec4(0, 1, 0, 0)
         mat = mat.rotate(.rotation, axis)
         mat = mat.translate(.position)
+        mat = view.mul(mat)
 
         dev.runMeshProgram(.mesh, .texture, mat)
     }

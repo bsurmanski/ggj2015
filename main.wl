@@ -10,6 +10,7 @@ import "mesh.wl"
 import "fmt/mdl.wl"
 import "collision.wl"
 import "random.wl"
+import "cookie.wl"
 
 import "man.wl"
 import "title.wl"
@@ -24,9 +25,11 @@ GLTexture tex
 
 DuckMan man
 Title title
+mat4 view
 
 GLMesh house_inside_mesh
 GLTexture house_inside_tex
+Cookie cookie
 
 void init() {
     SDLWindow window = new SDLWindow(640, 480, "test")
@@ -35,6 +38,7 @@ void init() {
     glDevice = new GLDrawDevice(640, 480)
     man = new DuckMan()
     title = new Title()
+    cookie = new Cookie()
 
     i = loadTGA(new StringFile(pack "res/house_inside.tga"))
     house_inside_tex = new GLTexture(i)
@@ -66,6 +70,19 @@ void input() {
 void update(float dt) {
     glDevice.update(dt)
     man.update(dt)
+
+    cookie.update(dt)
+
+    view = mat4()
+    view = view.rotate(0.5, vec4(1, 0, 0, 0))
+    view = view.translate(vec4(0, -3, -15, 0))
+}
+
+void draw_house() {
+    glFrontFace(GL_CW)
+    glEnable(GL_CULL_FACE)
+    glDevice.runMeshProgram(house_inside_mesh, house_inside_tex, view)
+    glDisable(GL_CULL_FACE)
 }
 
 void draw() {
@@ -73,8 +90,9 @@ void draw() {
     glDevice.clear()
     tex.bind()
     //title.draw()
-    glDevice.runMeshProgram(house_inside_mesh, house_inside_tex, mat4())
-    man.draw()
+    draw_house()
+    man.draw(view)
+    cookie.draw(view)
     glDevice.drawQuad()
 
     SDL_GL_SwapBuffers()
