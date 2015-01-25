@@ -19,6 +19,8 @@ import "crumb.wl"
 import "entity.wl"
 import "carrot.wl"
 import "cliffbar.wl"
+import "girl.wl"
+import "shroom.wl"
 
 import "man.wl"
 import "title.wl"
@@ -51,12 +53,17 @@ GLTexture instructions
 GLTexture win
 GLTexture lose
 
+//int WIDTH = 640
+//int HEIGHT = 480
+
+int WIDTH = 960
+int HEIGHT = 720
 void init() {
-    SDLWindow window = new SDLWindow(640, 480, "test")
+    SDLWindow window = new SDLWindow(WIDTH, HEIGHT, "test")
     Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 2048)
     Image i = loadTGA(new StringFile(pack "res/test.tga"))
     tex = new GLTexture(i)
-    glDevice = new GLDrawDevice(640, 480)
+    glDevice = new GLDrawDevice(WIDTH, HEIGHT)
     man = new DuckMan()
     title = new Title()
 
@@ -100,6 +107,8 @@ void input() {
             initCrumbs()
             initCarrots()
             initCliffbars()
+            (Entity.add(new GirlDuck()))
+            //(Entity.add(new Shroom()))
         }
     }else if(whereAreWe == GAME) {
         if(keystate[SDLK_LEFT]) {
@@ -143,7 +152,6 @@ void update(float dt) {
                 cookie.position = vec4(0, 15, 0, 0)
             }
             static float cookie_v
-            man.scale = 1.0f
             if(cookie.position.v[1] > 0.0f) {
                 cookie_v -= 0.02
                 cookie.position.v[1] += cookie_v

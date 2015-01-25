@@ -14,7 +14,7 @@ import "man.wl"
 use "importc"
 import(C) "math.h"
 
-class Cliffbar : Entity {
+class Shroom : Entity {
     static GLMesh mesh
     static GLTexture texture
 
@@ -22,17 +22,14 @@ class Cliffbar : Entity {
     
     bool isDead() return .dead
 
-    float yummyNummies() return 10.0f
-    float nummies() return 0.1
-
     this() {
         if(!mesh) {
-            Mesh m = loadMdl(new StringFile(pack "res/cliffbar.mdl"))
+            Mesh m = loadMdl(new StringFile(pack "res/mushroom.mdl"))
             .mesh = new GLMesh(m)
         }
 
         if(!texture) {
-            Image i = loadTGA(new StringFile(pack "res/cliffbar.tga"))
+            Image i = loadTGA(new StringFile(pack "res/mushroom.tga"))
             .texture = new GLTexture(i)
         }
         .rotation = randomFloat() * 6 // 6 = 2PI (close enough)
@@ -43,16 +40,19 @@ class Cliffbar : Entity {
     void update(float dt) {
         DuckMan d = DuckMan.getInstance()
         Box3 dhit = d.getHitbox()
-        if(dhit.collides(.getHitbox()) and d.scale > 0.4) {
-            d.eat(this)
-            .dead = true
+        if(dhit.collides(.getHitbox())) {
+            if(d.scale * 2.2 > 1.5)  {
+                d.eat(this)
+                .dead = true
+            } else {
+            }
         }
-        .rotation += 0.1
-        .position.v[1] = (sin(.rotation) / 2.0f + 0.5) / 10.0f
     }
 
+    float nummies() return 0.01
+
     Box3 getHitbox() {
-        vec4 dim = vec4(0.2, 0.2, 0.2, 0)
+        vec4 dim = vec4(3.3, 0.98, 0.86, 0)
         return Box3(.position, dim)
     }
 
@@ -63,11 +63,5 @@ class Cliffbar : Entity {
         mat = mat.translate(.position)
         mat = view.mul(mat)
         dev.runMeshProgram(.mesh, .texture, mat)
-    }
-}
-
-void initCliffbars() {
-    for(int i = 0; i < 2; i++) {
-        (Entity.add(new Cliffbar()))
     }
 }

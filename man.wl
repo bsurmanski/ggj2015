@@ -17,7 +17,6 @@ class DuckMan : Entity {
     static GLTexture texture
     static Mix_Chunk^ hop
     static Mix_Chunk^ munch
-    float bounce
     bool moved
     float scale
     bool dead
@@ -56,6 +55,7 @@ class DuckMan : Entity {
         .scale += e.nummies()
         .nummyTimer += e.yummyNummies()
 
+        printf("%f\n", .scale)
         //win
         if(e.areYouCookie()) {
         }
@@ -84,10 +84,10 @@ class DuckMan : Entity {
         }
 
         // keep the dude in the boundaries
-        if(.position.v[0] > 10 - .scale) .position.v[0] = 10 - .scale
-        if(.position.v[0] < -10 + .scale) .position.v[0] = -10 + .scale
-        if(.position.v[2] > 10 - .scale) .position.v[2] = 10 - .scale
-        if(.position.v[2] < -10 + .scale) .position.v[2] = -10 + .scale
+        if(.position.v[0] > 10 - .scale/2) .position.v[0] = 10 - .scale/2
+        if(.position.v[0] < -10 + .scale/2) .position.v[0] = -10 + .scale/2
+        if(.position.v[2] > 10 - .scale/2) .position.v[2] = 10 - .scale/2
+        if(.position.v[2] < -10 + .scale/2) .position.v[2] = -10 + .scale/2
     }
 
     void rotate(float f) {

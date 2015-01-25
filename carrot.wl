@@ -49,7 +49,7 @@ class Carrot : Entity {
         }
     }
 
-    float nummies() return 0.2
+    float nummies() return 0.15
 
     Box3 getHitbox() {
         vec4 dim = vec4(3.3, 0.98, 0.86, 0)

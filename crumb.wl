@@ -22,6 +22,8 @@ class Crumb : Entity {
     
     bool isDead() return .dead
 
+    float nummies() return 0.01
+
     this() {
         if(!mesh) {
             Mesh m = loadMdl(new StringFile(pack "res/crumb.mdl"))

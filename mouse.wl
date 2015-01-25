@@ -19,11 +19,11 @@ class Mouse : Entity {
     static GLMesh mesh
     static GLTexture texture
     float timer
-    float targetRotation
-    int state
+    int spin
     bool dead
 
     this() {
+        .spin = 1
         if(!mesh) {
             Mesh m = loadMdl(new StringFile(pack "res/mouse.mdl"))
             .mesh = new GLMesh(m)
@@ -39,21 +39,21 @@ class Mouse : Entity {
         .position.v[2] = randomFloat() * 20.0f - 10.0f
     }
 
-    float nummies() return 0.25
+    float nummies() return 0.15
 
     bool isDead() return .dead
 
     void update(float dt) {
         .timer -= dt
         if(.timer <= 0) {
-            .state = !.state //swap tween rotate/move
+            .spin = -.spin
             .timer = randomFloat() * 3
         }
 
         DuckMan d = DuckMan.getInstance()
         Box3 dhit = d.getHitbox()
         if(dhit.collides(.getHitbox())) {
-            if(d.scale * 2.2 > 2.0) {
+            if(d.scale * 2.2 > 1.6) {
                 d.eat(this)
                 .dead = true
             } else {
@@ -61,33 +61,24 @@ class Mouse : Entity {
             }
         }
 
-        .rotation = remainder(.rotation, 6.28)
-        
-        if(.state == 0) {
-        } else if(.state == 1) {
-            if(fabsf(.rotation - .targetRotation) < 0.1)
-                .targetRotation = randomFloat() * 6.28 // 2pi ~ish
+        .rotation += 0.15 * .spin
+        vec4 dv = vec4(0, 0, -0.10, 0)
 
-            .rotation += 0.2
-            vec4 dv = vec4(0, 0, -0.25, 0)
+        mat4 matrix = mat4()
+        matrix = matrix.rotate(.rotation, vec4(0, 1, 0, 0))
+        dv = matrix.vmul(dv)
 
-            mat4 matrix = mat4()
-            matrix = matrix.rotate(.rotation, vec4(0, 1, 0, 0))
-            dv = matrix.vmul(dv)
+        if(.position.v[0] < -9.0f || .position.v[0] > 9.0f ||
+            .position.v[2] < -9.0f || .position.v[2] > 9.0f) {
+            if(dv.dot(.position) > 0) {
+                .timer /= 2.0f
+                .rotation = .rotation - 3.1415926;
 
-            if(.position.v[0] < -9.0f || .position.v[0] > 9.0f ||
-                .position.v[2] < -9.0f || .position.v[2] > 9.0f) {
-                if(dv.dot(.position) > 0) {
-                    .state = 0
-                    .timer /= 2.0f
-                    return
-                }
+                return
             }
-
-            .position = .position.add(dv)
-        } else {
-            .state = 0
         }
+
+        .position = .position.add(dv)
     }
 
     Box3 getHitbox() {
