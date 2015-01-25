@@ -41,11 +41,12 @@ class Carrot : Entity {
         DuckMan d = DuckMan.getInstance()
         Box3 dhit = d.getHitbox()
         if(dhit.collides(.getHitbox())) {
-            d.eat(this)
-            .dead = true
+            if(d.scale * 2.2 > 1.5)  {
+                d.eat(this)
+                .dead = true
+            } else {
+            }
         }
-        //.rotation += 0.1
-        //.position.v[1] = (sin(.rotation) / 2.0f + 0.5) / 10.0f
     }
 
     float nummies() return 0.2

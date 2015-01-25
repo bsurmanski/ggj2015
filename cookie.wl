@@ -11,6 +11,7 @@ import "man.wl"
 
 class Cookie : Entity {
     static GLMesh mesh
+    static GLMesh monkey
     static GLTexture texture
     float tick
     bool dead
@@ -22,6 +23,9 @@ class Cookie : Entity {
         if(!.mesh) {
             Mesh m = loadMdl(new StringFile(pack "res/cookie.mdl"))
             .mesh = new GLMesh(m)
+
+            m = loadMdl(new StringFile(pack "res/monkey.mdl"))
+            .monkey = new GLMesh(m)
         }
 
         if(!.texture) {
@@ -54,6 +58,11 @@ class Cookie : Entity {
         mat = mat.rotate(.tick * 2, vec4(0, 1, 0, 0))
         mat = mat.translate(.position)
         mat = view.mul(mat)
-        dev.runMeshProgram(.mesh, .texture, mat)
+
+        if(dev.crazy) {
+            dev.runMeshProgram(.monkey, .texture, mat)
+        } else {
+            dev.runMeshProgram(.mesh, .texture, mat)
+        }
     }
 }

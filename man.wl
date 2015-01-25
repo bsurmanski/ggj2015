@@ -47,7 +47,7 @@ class DuckMan : Entity {
     }
 
     Box3 getHitbox() {
-        vec4 dim = vec4(2.2, 2.5, 1.9, 0)
+        vec4 dim = vec4(1.8, 2.5, 1.8, 0)
         return Box3(.position, dim.mul(.scale))
     }
 

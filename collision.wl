@@ -124,10 +124,10 @@ struct Box3 {
         return true
     }
 
-    float[3] minTranslation(Box3 o) {
-        float[3] ret
+    vec4 minTranslation(Box3 o) {
+        vec4 ret
         for(int i = 0; i < 3; i++) {
-            ret[i] = box_dim_mtd(.pos[i], .dim[i], o.pos[i], o.dim[i])
+            ret.v[i] = box_dim_mtd(.pos[i], .dim[i], o.pos[i], o.dim[i])
         }
         return ret
     }

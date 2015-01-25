@@ -80,6 +80,9 @@ void input() {
     SDL_PumpEvents()
     uint8^ keystate = SDL_GetKeyState(null)
 
+    static bool SPACE_DOWN
+    static bool X_DOWN
+
     if(keystate[SDLK_ESCAPE]) {
         running = false
     }
@@ -89,7 +92,7 @@ void input() {
             whereAreWe = INSTRUCTIONS 
         }
     } else if(whereAreWe == INSTRUCTIONS) {
-        if(keystate[SDLK_SPACE]) {
+        if(keystate[SDLK_SPACE] and !SPACE_DOWN) {
             whereAreWe = GAME
             // this is here so that music messes with random seed
             initMice()
@@ -113,11 +116,12 @@ void input() {
     }
 
     GLDrawDevice dev = GLDrawDevice.getInstance()
-    if(keystate[SDLK_x]) {
-        dev.crazy = true
-    } else {
-        dev.crazy = false 
+    if(keystate[SDLK_x] and !X_DOWN) {
+        dev.crazy = !dev.crazy
     }
+
+    SPACE_DOWN = keystate[SDLK_SPACE]
+    X_DOWN = keystate[SDLK_x]
 }
 
 void update(float dt) {

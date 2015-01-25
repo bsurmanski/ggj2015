@@ -23,6 +23,7 @@ class Cliffbar : Entity {
     bool isDead() return .dead
 
     float yummyNummies() return 10.0f
+    float nummies() return 0.1
 
     this() {
         if(!mesh) {

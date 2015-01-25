@@ -12,6 +12,7 @@ import(C) "GL/gl.h"
 class Title {
     GLTexture titleName
     Cookie cookie
+
     this() {
         Image i = loadTGA(new StringFile(pack "res/title.tga"))
         .titleName = new GLTexture(i)
