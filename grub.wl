@@ -9,19 +9,28 @@ import "file.wl"
 import "random.wl"
 import "collision.wl"
 
+import "man.wl"
+
+use "importc"
+import(C) "math.h"
+
 class Grub : Entity {
     static const int STATE_ROTATE = 0
     static const int STATE_MOVE = 1
     static GLMesh mesh
     static GLTexture texture
+    float scale
     float timer
     int state
+    int spin
 
     static Grub first
     Grub prev
     Grub next
 
     this() {
+        .scale = 0.5 + randomFloat()
+        .spin = 1
         if(!mesh) {
             Mesh m = loadMdl(new StringFile(pack "res/grub.mdl"))
             .mesh = new GLMesh(m)
@@ -38,13 +47,21 @@ class Grub : Entity {
         .timer -= dt
         if(.timer <= 0) {
             .state = !.state //swap tween rotate/move
+            if(randomFloat() > 0.4) .spin = -.spin
             .timer = randomFloat() * 3
+        }
+
+        DuckMan d = DuckMan.getInstance()
+        Box3 dhit = d.getHitbox()
+        if(dhit.collides(.getHitbox())) {
+            if(.state == 0)
+            d.scale += 0.1
         }
         
         if(.state == 0) {
-            .rotation += 0.333
+            .rotation += 0.333 * .spin
         } else if(.state == 1) {
-            vec4 dv = vec4(0, 0, -0.25, 0)
+            vec4 dv = vec4(0, 0, -0.2 * sqrt(.scale), 0)
 
             mat4 matrix = mat4()
             matrix = matrix.rotate(.rotation, vec4(0, 1, 0, 0))
@@ -63,6 +80,12 @@ class Grub : Entity {
         } else {
             .state = 0
         }
+    }
+
+    Box3 getHitbox() {
+        vec4 dim = vec4(0.45, 0.2, 0.45, 0)
+        dim.mul(.scale)
+        return Box3(.position, dim)
     }
 
     void draw(mat4 view) {

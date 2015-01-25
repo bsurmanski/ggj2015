@@ -6,36 +6,67 @@ import "mesh.wl"
 import "image.wl"
 import "file.wl"
 import "vec.wl"
+import "collision.wl"
 
 use "importc"
 import(C) "math.h"
+import(C) "SDL/SDL_mixer.h"
 
 class DuckMan : Entity {
     static GLMesh mesh
     static GLTexture texture
+    static Mix_Chunk^ hop
     float bounce
     bool moved
     float scale
 
+    static DuckMan instance
+    static DuckMan getInstance() {
+        return instance
+    }
+
     this() {
+        instance = this
+
         Image img = loadTGA(new StringFile(pack "res/pillduck.tga"))
         .texture = new GLTexture(img)
         Mesh m = loadMdl(new StringFile(pack "res/pillduck.mdl"))
         .mesh = new GLMesh(m)
+        hop = Mix_LoadWAV_RW(SDL_RWFromFile("res/hop.wav", "rb"), 1)
+        Mix_VolumeChunk(hop, 50)
 
-        .scale = 0.2
+        .scale = 0.1
         .position = vec4(0, 0, 0, 1)
+    }
+
+    Box3 getHitbox() {
+        vec4 dim = vec4(2.2, 2.5, 1.9, 0)
+        return Box3(.position, dim.mul(.scale))
     }
 
     void update(float dt) {
         static float tick
+
+        // cos is derivitive of sin; and *2 frequency since func is abs(sin)
+        bool inflection = cos(tick * 20.0f) < 0.0f and cos((tick + dt) * 20.0f) > 0.0f
+
         tick += dt
         float targety = 0.0f
         if(.moved) {
             targety = fabsf(sin(tick * 10.0f)) / 4.0f
         }
         .position.v[1] = (.position.v[1] + (targety - .position.v[1]) * 0.6f)
+        if(inflection and .moved) {
+            Mix_PlayChannelTimed(-1, .hop, 0, -1)
+        }
         .moved = false
+
+
+        // keep the dude in the boundaries
+        if(.position.v[0] > 10 - .scale) .position.v[0] = 10 - .scale
+        if(.position.v[0] < -10 + .scale) .position.v[0] = -10 + .scale
+        if(.position.v[2] > 10 - .scale) .position.v[2] = 10 - .scale
+        if(.position.v[2] < -10 + .scale) .position.v[2] = -10 + .scale
     }
 
     void rotate(float f) {
@@ -44,7 +75,7 @@ class DuckMan : Entity {
 
     void step() {
         vec4 axis = vec4(0, 1, 0, 0)
-        vec4 dv = vec4(0, 0, -0.4 * .scale, 0)
+        vec4 dv = vec4(0, 0, -0.2 * sqrtf(.scale), 0)
         mat4 matrix = mat4()
         matrix = matrix.rotate(.rotation, axis)
         dv = matrix.vmul(dv)

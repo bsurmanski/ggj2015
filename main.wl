@@ -1,6 +1,7 @@
 //XXX it errors if out of order
 use "importc"
 import(C) "SDL/SDL.h"
+import(C) "SDL/SDL_mixer.h"
 import "image.wl"
 import "fmt/tga.wl"
 import "file.wl"
@@ -13,6 +14,7 @@ import "random.wl"
 import "cookie.wl"
 import "grub.wl"
 import "mouse.wl"
+import "music.wl"
 
 import "man.wl"
 import "title.wl"
@@ -22,6 +24,7 @@ import "vec.wl"
 undecorated int printf(char^ fmt, ...);
 
 bool running = true
+bool isTitle = true
 GLDrawDevice glDevice
 GLTexture tex
 
@@ -31,19 +34,20 @@ mat4 view
 
 GLMesh house_inside_mesh
 GLTexture house_inside_tex
-Cookie cookie
 
 void init() {
     SDLWindow window = new SDLWindow(640, 480, "test")
+    Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 2048)
     Image i = loadTGA(new StringFile(pack "res/test.tga"))
     tex = new GLTexture(i)
     glDevice = new GLDrawDevice(640, 480)
     man = new DuckMan()
     title = new Title()
-    cookie = new Cookie()
 
     initMice()
     initGrubs()
+
+    musicInit()
 
     i = loadTGA(new StringFile(pack "res/house_inside.tga"))
     house_inside_tex = new GLTexture(i)
@@ -55,37 +59,48 @@ void input() {
     SDL_PumpEvents()
     uint8^ keystate = SDL_GetKeyState(null)
 
-    if(keystate[SDLK_SPACE]) {
+    if(keystate[SDLK_ESCAPE]) {
         running = false
     }
 
-    if(keystate[SDLK_LEFT]) {
-        man.rotate(0.25)
-    }
+    if(isTitle) {
+        if(keystate[SDLK_SPACE]) {
+            isTitle = false
+        }
+    } else {
 
-    if(keystate[SDLK_RIGHT]) {
-        man.rotate(-0.25)
-    }
+        if(keystate[SDLK_LEFT]) {
+            man.rotate(0.25)
+        }
 
-    if(keystate[SDLK_UP]) {
-        man.step()
+        if(keystate[SDLK_RIGHT]) {
+            man.rotate(-0.25)
+        }
+
+        if(keystate[SDLK_UP]) {
+            man.step()
+        }
     }
 }
 
 void update(float dt) {
     glDevice.update(dt)
-    man.update(dt)
+    if(isTitle) {
+        title.update(dt)
+    } else {
+        man.update(dt)
 
-    cookie.update(dt)
+        updateMice(dt)
+        updateGrubs(dt)
 
-    updateMice(dt)
-    updateGrubs(dt)
+        view = mat4()
+        view = view.translate(vec4(-man.position.v[0], 
+                                -6.0f * man.scale - 1, 
+                                -8.0f * man.scale - man.position.v[2] - 1, 0))
+        view = view.rotate(0.5, vec4(1, 0, 0, 0))
+    }
 
-    view = mat4()
-    view = view.translate(vec4(-man.position.v[0], 
-                            -6.0f * man.scale - 1, 
-                            -8.0f * man.scale - man.position.v[2] - 1, 0))
-    view = view.rotate(0.5, vec4(1, 0, 0, 0))
+    musicUpdate(dt)
 }
 
 void draw_house() {
@@ -99,12 +114,15 @@ void draw() {
     glDevice.clearBuffer()
     glDevice.clear()
     tex.bind()
-    //title.draw()
-    draw_house()
-    man.draw(view)
+    if(isTitle) {
+        title.draw()
+    } else {
+        draw_house()
+        man.draw(view)
 
-    drawMice(view)
-    drawGrubs(view)
+        drawMice(view)
+        drawGrubs(view)
+    }
 
     glDevice.drawQuad()
 

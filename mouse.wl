@@ -9,6 +9,9 @@ import "file.wl"
 import "random.wl"
 import "collision.wl"
 
+use "importc"
+import(C) "math.h"
+
 int nmice
 Mouse[] mice
 
@@ -18,6 +21,7 @@ class Mouse : Entity {
     static GLMesh mesh
     static GLTexture texture
     float timer
+    float targetRotation
     int state
 
     static Mouse first
@@ -43,10 +47,15 @@ class Mouse : Entity {
             .state = !.state //swap tween rotate/move
             .timer = randomFloat() * 3
         }
+
+        .rotation = remainder(.rotation, 6.28)
         
         if(.state == 0) {
-            .rotation += 0.333
         } else if(.state == 1) {
+            if(fabsf(.rotation - .targetRotation) < 0.1)
+                .targetRotation = randomFloat() * 6.28 // 2pi ~ish
+
+            .rotation += 0.2
             vec4 dv = vec4(0, 0, -0.25, 0)
 
             mat4 matrix = mat4()
@@ -81,7 +90,7 @@ class Mouse : Entity {
 void initMice() {
     Mouse m = Mouse.first = new Mouse()
 
-    for(int i = 1; i < 3; i++) {
+    for(int i = 1; i < 2; i++) {
         m.next = new Mouse()
         m.next.prev = m
         m = m.next

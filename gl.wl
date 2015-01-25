@@ -325,6 +325,34 @@ class GLDrawDevice {
         mesh.draw()
     }
 
+    void runTitleProgram(GLMesh mesh, GLTexture tex, mat4 mat) {
+        glViewport(0, 0, .w/4, .h/4)
+        static GLProgram program
+
+        if(!program) {
+            program = new GLProgram(pack "glsl/title.vs", pack "glsl/title.fs")
+        }
+
+        .mainBuffer.bind()
+
+        program.bind()
+        mesh.bind()
+
+        if(tex) tex.bind()
+        
+        .bindStandardAttributes(program)
+
+        glUniform1i(glGetUniformLocation(program.program, "tex"), 0)
+
+        mat4 persp = getFrustumMatrix(-1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 10000)
+        mat4 matrix = persp.mul(mat)
+
+        glUniformMatrix4fv(glGetUniformLocation(program.program, "matrix"), 1, GL_TRUE, matrix.ptr())
+        glUniform1f(glGetUniformLocation(program.program, "tick"), .tick)
+
+        mesh.draw()
+    }
+
     void drawQuad() {
         .runSimpleProgram(.quad, .colorTexture, mat4())
     }
