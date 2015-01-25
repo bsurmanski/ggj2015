@@ -17,6 +17,8 @@ import "mouse.wl"
 import "music.wl"
 import "crumb.wl"
 import "entity.wl"
+import "carrot.wl"
+import "cliffbar.wl"
 
 import "man.wl"
 import "title.wl"
@@ -25,10 +27,18 @@ import "vec.wl"
 
 undecorated int printf(char^ fmt, ...);
 
+const int TITLE = 0
+const int INSTRUCTIONS = 1
+const int GAME = 2
+const int WIN = 3
+const int LOSE = 4
 bool running = true
-bool isTitle = true
 GLDrawDevice glDevice
 GLTexture tex
+
+int whereAreWe= 0
+
+Cookie cookie
 
 DuckMan man
 Title title
@@ -36,6 +46,10 @@ mat4 view
 
 GLMesh house_inside_mesh
 GLTexture house_inside_tex
+
+GLTexture instructions
+GLTexture win
+GLTexture lose
 
 void init() {
     SDLWindow window = new SDLWindow(640, 480, "test")
@@ -46,9 +60,13 @@ void init() {
     man = new DuckMan()
     title = new Title()
 
-    initMice()
-    initGrubs()
-    initCrumbs()
+    i = loadTGA(new StringFile(pack "res/instructions.tga"))
+    instructions = new GLTexture(i)
+    i = loadTGA(new StringFile(pack "res/win.tga"))
+    win = new GLTexture(i)
+    i = loadTGA(new StringFile(pack "res/lose.tga"))
+    lose = new GLTexture(i)
+
 
     musicInit()
 
@@ -66,12 +84,21 @@ void input() {
         running = false
     }
 
-    if(isTitle) {
+    if(whereAreWe == TITLE) {
         if(keystate[SDLK_SPACE]) {
-            isTitle = false
+            whereAreWe = INSTRUCTIONS 
         }
-    } else if(!man.isDead()) {
-
+    } else if(whereAreWe == INSTRUCTIONS) {
+        if(keystate[SDLK_SPACE]) {
+            whereAreWe = GAME
+            // this is here so that music messes with random seed
+            initMice()
+            initGrubs()
+            initCrumbs()
+            initCarrots()
+            initCliffbars()
+        }
+    }else if(whereAreWe == GAME) {
         if(keystate[SDLK_LEFT]) {
             man.rotate(0.25)
         }
@@ -95,20 +122,50 @@ void input() {
 
 void update(float dt) {
     glDevice.update(dt)
-    if(isTitle) {
+    if(whereAreWe == TITLE) {
         title.update(dt)
-    } else if(!man.isDead()) {
+    } else if(whereAreWe == GAME) {
         man.update(dt)
+        if(man.isDead()) {
+            whereAreWe = LOSE
+        }
 
         updateEntities(dt)
+
+        Entity first = (Entity.getFirst())
+        if(!first) {
+            if(!cookie) {
+                cookie = new Cookie()
+                cookie.position = vec4(0, 15, 0, 0)
+            }
+            static float cookie_v
+            man.scale = 1.0f
+            if(cookie.position.v[1] > 0.0f) {
+                cookie_v -= 0.02
+                cookie.position.v[1] += cookie_v
+            } else {
+                cookie_v *= -0.7
+                cookie.position.v[1] = 0.01f
+            }
+
+            cookie.update(dt)
+
+            if(cookie.isDead()) {
+                whereAreWe = WIN
+            }
+        }
 
         view = mat4()
         view = view.translate(vec4(-man.position.v[0], 
                                 -6.0f * man.scale - 1, 
                                 -8.0f * man.scale - man.position.v[2] - 1, 0))
         view = view.rotate(0.5, vec4(1, 0, 0, 0))
-        musicUpdate(dt)
-    } else {
+    }
+
+    if(!man.isDead()) {
+        float musicDt = dt
+        if(man.nummyTimer > 0) musicDt *=2
+        musicUpdate(musicDt)
     }
 }
 
@@ -123,13 +180,23 @@ void draw() {
     glDevice.clearBuffer()
     glDevice.clear()
     tex.bind()
-    if(isTitle) {
+    if(whereAreWe == TITLE) {
         title.draw()
-    } else {
+    } else if(whereAreWe == INSTRUCTIONS) {
+        glDevice.runTitleProgram(glDevice.getQuad(), instructions, mat4())
+    } else if(whereAreWe == GAME) {
         draw_house()
         man.draw(view)
 
         drawEntities(view)
+
+        if(cookie) {
+            cookie.draw(view)
+        }
+    } else if(whereAreWe == WIN) {
+        glDevice.runTitleProgram(glDevice.getQuad(), win, mat4())
+    } else if(whereAreWe == LOSE) {
+        glDevice.runTitleProgram(glDevice.getQuad(), lose, mat4())
     }
 
     glDevice.drawQuad()

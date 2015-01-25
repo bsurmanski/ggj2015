@@ -57,7 +57,7 @@ class Grub : Entity {
         Box3 dhit = d.getHitbox()
         if(dhit.collides(.getHitbox())) {
             if(d.scale * 2.2 > .scale * 0.45) {
-                d.eat()
+                d.eat(this)
                 .dead = true
             } else {
                 d.dead = true

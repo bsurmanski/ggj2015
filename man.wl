@@ -21,6 +21,7 @@ class DuckMan : Entity {
     bool moved
     float scale
     bool dead
+    float nummyTimer
 
     static DuckMan instance
     static DuckMan getInstance() {
@@ -50,10 +51,14 @@ class DuckMan : Entity {
         return Box3(.position, dim.mul(.scale))
     }
 
-    void eat() {
+    void eat(Entity e) {
         Mix_PlayChannelTimed(-1, .munch, 0, -1)
-        .scale += 0.01
-        printf("%f\n", .scale)
+        .scale += e.nummies()
+        .nummyTimer += e.yummyNummies()
+
+        //win
+        if(e.areYouCookie()) {
+        }
     }
 
     void update(float dt) {
@@ -63,6 +68,7 @@ class DuckMan : Entity {
         bool inflection = cos(tick * 20.0f) < 0.0f and cos((tick + dt) * 20.0f) > 0.0f
 
         tick += dt
+
         float targety = 0.0f
         if(.moved) {
             targety = fabsf(sin(tick * 10.0f)) / 4.0f
@@ -73,6 +79,9 @@ class DuckMan : Entity {
         }
         .moved = false
 
+        if(.nummyTimer > 0.0f) {
+            .nummyTimer -= dt
+        }
 
         // keep the dude in the boundaries
         if(.position.v[0] > 10 - .scale) .position.v[0] = 10 - .scale
@@ -91,6 +100,10 @@ class DuckMan : Entity {
         mat4 matrix = mat4()
         matrix = matrix.rotate(.rotation, axis)
         dv = matrix.vmul(dv)
+
+        if(.nummyTimer > 0.0f) {
+            dv = dv.mul(1.5f)
+        }
 
         .position = .position.add(dv)
         .moved = true

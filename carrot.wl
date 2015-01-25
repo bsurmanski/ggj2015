@@ -14,7 +14,7 @@ import "man.wl"
 use "importc"
 import(C) "math.h"
 
-class Crumb : Entity {
+class Carrot : Entity {
     static GLMesh mesh
     static GLTexture texture
 
@@ -24,12 +24,12 @@ class Crumb : Entity {
 
     this() {
         if(!mesh) {
-            Mesh m = loadMdl(new StringFile(pack "res/crumb.mdl"))
+            Mesh m = loadMdl(new StringFile(pack "res/carrot.mdl"))
             .mesh = new GLMesh(m)
         }
 
         if(!texture) {
-            Image i = loadTGA(new StringFile(pack "res/crumb.tga"))
+            Image i = loadTGA(new StringFile(pack "res/carrot.tga"))
             .texture = new GLTexture(i)
         }
         .rotation = randomFloat() * 6 // 6 = 2PI (close enough)
@@ -44,12 +44,14 @@ class Crumb : Entity {
             d.eat(this)
             .dead = true
         }
-        .rotation += 0.1
-        .position.v[1] = (sin(.rotation) / 2.0f + 0.5) / 10.0f
+        //.rotation += 0.1
+        //.position.v[1] = (sin(.rotation) / 2.0f + 0.5) / 10.0f
     }
 
+    float nummies() return 0.2
+
     Box3 getHitbox() {
-        vec4 dim = vec4(0.2, 0.2, 0.2, 0)
+        vec4 dim = vec4(3.3, 0.98, 0.86, 0)
         return Box3(.position, dim)
     }
 
@@ -63,8 +65,8 @@ class Crumb : Entity {
     }
 }
 
-void initCrumbs() {
-    for(int i = 0; i < 20; i++) {
-        (Entity.add(new Crumb()))
+void initCarrots() {
+    for(int i = 0; i < 3; i++) {
+        (Entity.add(new Carrot()))
     }
 }

@@ -23,6 +23,10 @@ class Entity {
         }
     }
 
+    float nummies() return 0.01f
+    float yummyNummies() return 0.0f
+    bool areYouCookie() return false
+
     void update(float dt) {
     }
 

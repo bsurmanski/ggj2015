@@ -8,6 +8,7 @@ import "vec.wl"
 import "file.wl"
 import "random.wl"
 import "collision.wl"
+import "man.wl"
 
 use "importc"
 import(C) "math.h"
@@ -20,6 +21,7 @@ class Mouse : Entity {
     float timer
     float targetRotation
     int state
+    bool dead
 
     this() {
         if(!mesh) {
@@ -37,11 +39,24 @@ class Mouse : Entity {
         .position.v[2] = randomFloat() * 20.0f - 10.0f
     }
 
+    bool isDead() return .dead
+
     void update(float dt) {
         .timer -= dt
         if(.timer <= 0) {
             .state = !.state //swap tween rotate/move
             .timer = randomFloat() * 3
+        }
+
+        DuckMan d = DuckMan.getInstance()
+        Box3 dhit = d.getHitbox()
+        if(dhit.collides(.getHitbox())) {
+            if(d.scale * 2.2 > 2.0) {
+                d.eat(this)
+                .dead = true
+            } else {
+                d.dead = true
+            }
         }
 
         .rotation = remainder(.rotation, 6.28)
@@ -71,6 +86,14 @@ class Mouse : Entity {
         } else {
             .state = 0
         }
+    }
+
+    Box3 getHitbox() {
+        vec4 dim = vec4(1.6, 1, 2.1, 0)
+        mat4 mat = mat4()
+        mat = mat.rotate(.rotation, vec4(0, 1, 0, 0))
+        dim = mat.vmul(dim)
+        return Box3(.position, dim)
     }
 
     void draw(mat4 view) {

@@ -14,7 +14,7 @@ import "man.wl"
 use "importc"
 import(C) "math.h"
 
-class Crumb : Entity {
+class Cliffbar : Entity {
     static GLMesh mesh
     static GLTexture texture
 
@@ -22,14 +22,16 @@ class Crumb : Entity {
     
     bool isDead() return .dead
 
+    float yummyNummies() return 10.0f
+
     this() {
         if(!mesh) {
-            Mesh m = loadMdl(new StringFile(pack "res/crumb.mdl"))
+            Mesh m = loadMdl(new StringFile(pack "res/cliffbar.mdl"))
             .mesh = new GLMesh(m)
         }
 
         if(!texture) {
-            Image i = loadTGA(new StringFile(pack "res/crumb.tga"))
+            Image i = loadTGA(new StringFile(pack "res/cliffbar.tga"))
             .texture = new GLTexture(i)
         }
         .rotation = randomFloat() * 6 // 6 = 2PI (close enough)
@@ -63,8 +65,8 @@ class Crumb : Entity {
     }
 }
 
-void initCrumbs() {
-    for(int i = 0; i < 20; i++) {
-        (Entity.add(new Crumb()))
+void initCliffbars() {
+    for(int i = 0; i < 2; i++) {
+        (Entity.add(new Cliffbar()))
     }
 }
