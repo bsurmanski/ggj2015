@@ -12,9 +12,6 @@ import "collision.wl"
 use "importc"
 import(C) "math.h"
 
-int nmice
-Mouse[] mice
-
 class Mouse : Entity {
     static const int STATE_ROTATE = 0
     static const int STATE_MOVE = 1
@@ -23,10 +20,6 @@ class Mouse : Entity {
     float timer
     float targetRotation
     int state
-
-    static Mouse first
-    Mouse prev
-    Mouse next
 
     this() {
         if(!mesh) {
@@ -39,6 +32,9 @@ class Mouse : Entity {
             .texture = new GLTexture(i)
         }
         .rotation = randomFloat() * 6 // 6 = 2PI (close enough)
+
+        .position.v[0] = randomFloat() * 20.0f - 10.0f
+        .position.v[2] = randomFloat() * 20.0f - 10.0f
     }
 
     void update(float dt) {
@@ -88,27 +84,7 @@ class Mouse : Entity {
 }
 
 void initMice() {
-    Mouse m = Mouse.first = new Mouse()
-
-    for(int i = 1; i < 2; i++) {
-        m.next = new Mouse()
-        m.next.prev = m
-        m = m.next
-    }
-}
-
-void drawMice(mat4 view) {
-    Mouse m = Mouse.first
-    while(m) {
-        m.draw(view)
-        m = m.next
-    }
-}
-
-void updateMice(float dt) {
-    Mouse m = Mouse.first
-    while(m) {
-        m.update(dt)
-        m = m.next
+    for(int i = 0; i < 2; i++) {
+        (Entity.add(new Mouse()))
     }
 }

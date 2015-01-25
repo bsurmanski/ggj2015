@@ -207,6 +207,7 @@ class GLDrawDevice {
     int w
     int h
     float tick
+    bool crazy
     
     GLFramebuffer mainBuffer 
     GLTexture colorTexture
@@ -343,6 +344,7 @@ class GLDrawDevice {
         .bindStandardAttributes(program)
 
         glUniform1i(glGetUniformLocation(program.program, "tex"), 0)
+        glUniform1i(glGetUniformLocation(program.program, "crazy"), .crazy)
 
         mat4 persp = getFrustumMatrix(-1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 10000)
         mat4 matrix = persp.mul(mat)

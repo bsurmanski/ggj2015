@@ -23,12 +23,12 @@ class Grub : Entity {
     float timer
     int state
     int spin
+    bool dead
 
-    static Grub first
-    Grub prev
-    Grub next
+    bool isDead() return .dead
 
     this() {
+        .timer = 5
         .scale = 0.5 + randomFloat()
         .spin = 1
         if(!mesh) {
@@ -41,6 +41,8 @@ class Grub : Entity {
             .texture = new GLTexture(i)
         }
         .rotation = randomFloat() * 6 // 6 = 2PI (close enough)
+        .position.v[0] = randomFloat() * 20.0f - 10.0f
+        .position.v[2] = randomFloat() * 20.0f - 10.0f
     }
 
     void update(float dt) {
@@ -54,8 +56,12 @@ class Grub : Entity {
         DuckMan d = DuckMan.getInstance()
         Box3 dhit = d.getHitbox()
         if(dhit.collides(.getHitbox())) {
-            if(.state == 0)
-            d.scale += 0.1
+            if(d.scale * 2.2 > .scale * 0.45) {
+                d.eat()
+                .dead = true
+            } else {
+                d.dead = true
+            }
         }
         
         if(.state == 0) {
@@ -99,27 +105,7 @@ class Grub : Entity {
 }
 
 void initGrubs() {
-    Grub g = Grub.first = new Grub()
-
-    for(int i = 1; i < 5; i++) {
-        g.next = new Grub()
-        g.next.prev = g
-        g = g.next
-    }
-}
-
-void drawGrubs(mat4 view) {
-    Grub g = Grub.first
-    while(g) {
-        g.draw(view)
-        g = g.next
-    }
-}
-
-void updateGrubs(float dt) {
-    Grub g = Grub.first
-    while(g) {
-        g.update(dt)
-        g = g.next
+    for(int i = 0; i < 5; i++) {
+        (Entity.add(new Grub()))
     }
 }

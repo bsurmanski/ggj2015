@@ -16,14 +16,18 @@ class DuckMan : Entity {
     static GLMesh mesh
     static GLTexture texture
     static Mix_Chunk^ hop
+    static Mix_Chunk^ munch
     float bounce
     bool moved
     float scale
+    bool dead
 
     static DuckMan instance
     static DuckMan getInstance() {
         return instance
     }
+
+    bool isDead() return .dead
 
     this() {
         instance = this
@@ -33,7 +37,9 @@ class DuckMan : Entity {
         Mesh m = loadMdl(new StringFile(pack "res/pillduck.mdl"))
         .mesh = new GLMesh(m)
         hop = Mix_LoadWAV_RW(SDL_RWFromFile("res/hop.wav", "rb"), 1)
-        Mix_VolumeChunk(hop, 50)
+        munch = Mix_LoadWAV_RW(SDL_RWFromFile("res/munch.wav", "rb"), 1)
+        Mix_VolumeChunk(hop, 30)
+        Mix_VolumeChunk(munch, 70)
 
         .scale = 0.1
         .position = vec4(0, 0, 0, 1)
@@ -42,6 +48,12 @@ class DuckMan : Entity {
     Box3 getHitbox() {
         vec4 dim = vec4(2.2, 2.5, 1.9, 0)
         return Box3(.position, dim.mul(.scale))
+    }
+
+    void eat() {
+        Mix_PlayChannelTimed(-1, .munch, 0, -1)
+        .scale += 0.01
+        printf("%f\n", .scale)
     }
 
     void update(float dt) {

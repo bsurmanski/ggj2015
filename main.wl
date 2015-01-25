@@ -15,6 +15,8 @@ import "cookie.wl"
 import "grub.wl"
 import "mouse.wl"
 import "music.wl"
+import "crumb.wl"
+import "entity.wl"
 
 import "man.wl"
 import "title.wl"
@@ -46,6 +48,7 @@ void init() {
 
     initMice()
     initGrubs()
+    initCrumbs()
 
     musicInit()
 
@@ -67,7 +70,7 @@ void input() {
         if(keystate[SDLK_SPACE]) {
             isTitle = false
         }
-    } else {
+    } else if(!man.isDead()) {
 
         if(keystate[SDLK_LEFT]) {
             man.rotate(0.25)
@@ -81,26 +84,32 @@ void input() {
             man.step()
         }
     }
+
+    GLDrawDevice dev = GLDrawDevice.getInstance()
+    if(keystate[SDLK_x]) {
+        dev.crazy = true
+    } else {
+        dev.crazy = false 
+    }
 }
 
 void update(float dt) {
     glDevice.update(dt)
     if(isTitle) {
         title.update(dt)
-    } else {
+    } else if(!man.isDead()) {
         man.update(dt)
 
-        updateMice(dt)
-        updateGrubs(dt)
+        updateEntities(dt)
 
         view = mat4()
         view = view.translate(vec4(-man.position.v[0], 
                                 -6.0f * man.scale - 1, 
                                 -8.0f * man.scale - man.position.v[2] - 1, 0))
         view = view.rotate(0.5, vec4(1, 0, 0, 0))
+        musicUpdate(dt)
+    } else {
     }
-
-    musicUpdate(dt)
 }
 
 void draw_house() {
@@ -120,8 +129,7 @@ void draw() {
         draw_house()
         man.draw(view)
 
-        drawMice(view)
-        drawGrubs(view)
+        drawEntities(view)
     }
 
     glDevice.drawQuad()
@@ -132,14 +140,20 @@ void draw() {
 
 int main(int argc, char^^ argv) 
 {
+    static uint ticks
+    static uint lastTicks
     init()
     float dt = 0
     while(running) {
         input()
         update(dt)
         draw()
-        SDL_Delay(32)
-        dt = 0.03
+        ticks = SDL_GetTicks()
+        if(32 - (ticks - lastTicks) > 0) {
+        SDL_Delay(32 - (ticks - lastTicks))
+        }
+        dt = 0.032;
+        lastTicks = SDL_GetTicks()
     }
 
     return 0
