@@ -45,6 +45,13 @@ class DuckMan : Entity {
         .position = vec4(0, 0, 0, 1)
     }
 
+    void reset() {
+        .dead = false
+        .nummyTimer = 0
+        .scale = 0.1
+        .position = vec4(0, 0, 0, 1)
+    }
+
     Box3 getHitbox() {
         vec4 dim = vec4(1.8, 2.5, 1.8, 0)
         return Box3(.position, dim.mul(.scale))

@@ -7,7 +7,7 @@ class Entity {
     static Entity first
 
     Entity next
-    Entity prev
+    weak Entity prev
 
     static void setFirst(Entity e) first = e
     static Entity getFirst() return first
@@ -21,6 +21,12 @@ class Entity {
             e.next = first
             first = e
         }
+    }
+
+    static void removeAll() {
+        // ideally the refcounters would handle deleting all these
+        first.next = null
+        first = null
     }
 
     float nummies() return 0.01f

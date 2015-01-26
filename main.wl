@@ -90,6 +90,7 @@ void input() {
     static bool SPACE_DOWN
     static bool X_DOWN
 
+    if(keystate[SDLK_a]) man.scale = 1.5
     if(keystate[SDLK_ESCAPE]) {
         running = false
     }
@@ -110,7 +111,7 @@ void input() {
             (Entity.add(new GirlDuck()))
             //(Entity.add(new Shroom()))
         }
-    }else if(whereAreWe == GAME) {
+    } else if(whereAreWe == GAME) {
         if(keystate[SDLK_LEFT]) {
             man.rotate(0.25)
         }
@@ -122,6 +123,17 @@ void input() {
         if(keystate[SDLK_UP]) {
             man.step()
         }
+    } else if(whereAreWe == LOSE) {
+        if(keystate[SDLK_SPACE]) {
+            man.reset()
+            (Entity.removeAll())
+            whereAreWe = TITLE
+        }
+    } else if(whereAreWe == WIN) {
+            if(keystate[SDLK_SPACE]) {
+                man.reset()
+                whereAreWe = TITLE
+            }
     }
 
     GLDrawDevice dev = GLDrawDevice.getInstance()
@@ -152,12 +164,12 @@ void update(float dt) {
                 cookie.position = vec4(0, 15, 0, 0)
             }
             static float cookie_v
-            if(cookie.position.v[1] > 0.0f) {
+            if(cookie.position.v[1] > 1.0f) {
                 cookie_v -= 0.02
                 cookie.position.v[1] += cookie_v
             } else {
                 cookie_v *= -0.7
-                cookie.position.v[1] = 0.01f
+                cookie.position.v[1] = 1.01f
             }
 
             cookie.update(dt)

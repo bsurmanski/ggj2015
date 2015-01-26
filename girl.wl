@@ -13,6 +13,9 @@ import "man.wl"
 
 use "importc"
 import(C) "math.h"
+import(C) "SDL/SDL_mixer.h"
+
+Mix_Chunk^ girlDead 
 
 class GirlDuck : Entity {
     static const int STATE_ROTATE = 0
@@ -39,6 +42,10 @@ class GirlDuck : Entity {
             Image i = loadTGA(new StringFile(pack "res/girlduck.tga"))
             .texture = new GLTexture(i)
         }
+
+        if(!girlDead)
+            girlDead = Mix_LoadWAV_RW(SDL_RWFromFile("res/girldead.wav", "rb"), 1)
+
         .rotation = randomFloat() * 6 // 6 = 2PI (close enough)
         .position.v[0] = randomFloat() * 20.0f - 10.0f
         .position.v[2] = randomFloat() * 20.0f - 10.0f
@@ -71,6 +78,8 @@ class GirlDuck : Entity {
             if(d.scale > .scale) {
                 d.eat(this)
                 .dead = true
+
+                Mix_PlayChannelTimed(-1, girlDead, 0, -1) 
             } else {
                 d.dead = true
             }
