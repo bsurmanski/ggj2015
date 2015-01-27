@@ -2,6 +2,7 @@
 use "importc"
 import(C) "SDL/SDL.h"
 import(C) "SDL/SDL_mixer.h"
+import(C) "port.h"
 import "image.wl"
 import "fmt/tga.wl"
 import "file.wl"
@@ -59,7 +60,7 @@ GLTexture lose
 int WIDTH = 960
 int HEIGHT = 720
 void init() {
-    SDLWindow window = new SDLWindow(WIDTH, HEIGHT, "test")
+    SDLWindow window = new SDLWindow(WIDTH, HEIGHT, "Who Ate Cookies?")
     Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 2048)
     Image i = loadTGA(new StringFile(pack "res/test.tga"))
     tex = new GLTexture(i)
@@ -194,10 +195,9 @@ void update(float dt) {
 }
 
 void draw_house() {
-    glFrontFace(GL_CW)
-    glEnable(GL_CULL_FACE)
+    glDevice.cullFaces(true)
     glDevice.runMeshProgram(house_inside_mesh, house_inside_tex, view)
-    glDisable(GL_CULL_FACE)
+    glDevice.cullFaces(false)
 }
 
 void draw() {

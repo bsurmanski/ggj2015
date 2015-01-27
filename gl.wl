@@ -1,7 +1,7 @@
 use "importc"
 
 import(C) "SDL/SDL.h"
-import(C) "GL/gl.h"
+import(C) "port.h"
 
 import "vec.wl"
 import "image.wl"
@@ -23,38 +23,38 @@ class GLProgram {
         .program = glCreateProgram()
         .vshader = glCreateShader(GL_VERTEX_SHADER)
         .fshader = glCreateShader(GL_FRAGMENT_SHADER)
-        glShaderSource(.vshader, 1, &vsrc, null)
-        glShaderSource(.fshader, 1, &fsrc, null)
-        glCompileShader(.vshader)
-        glCompileShader(.fshader)
+        GLPShaderSource(.vshader, 1, &vsrc, null)
+        GLPShaderSource(.fshader, 1, &fsrc, null)
+        GLPCompileShader(.vshader)
+        GLPCompileShader(.fshader)
 
         int err
         char[512] buf
-        glGetShaderiv(.vshader, GL_COMPILE_STATUS, &err)
+        GLPGetShaderiv(.vshader, GL_COMPILE_STATUS, &err)
         if(err != GL_TRUE) {
-            glGetShaderInfoLog(.vshader, 512, null, buf.ptr)
+            GLPGetShaderInfoLog(.vshader, 512, null, buf.ptr)
             printf("VS ERR: %s\n", buf.ptr)
         }
 
-        glGetShaderiv(.fshader, GL_COMPILE_STATUS, &err)
+        GLPGetShaderiv(.fshader, GL_COMPILE_STATUS, &err)
         if(err != GL_TRUE) {
-            glGetShaderInfoLog(.fshader, 512, null, buf.ptr)
+            GLPGetShaderInfoLog(.fshader, 512, null, buf.ptr)
             printf("FS ERR: %s\n", buf.ptr)
         }
 
-        glAttachShader(.program, .vshader)
-        glAttachShader(.program, .fshader)
-        glLinkProgram(.program)
+        GLPAttachShader(.program, .vshader)
+        GLPAttachShader(.program, .fshader)
+        GLPLinkProgram(.program)
 
-        glGetProgramiv(.program, GL_LINK_STATUS, &err)
+        GLPGetProgramiv(.program, GL_LINK_STATUS, &err)
         if(err != GL_TRUE) {
-            glGetProgramInfoLog(.program, 512, null, buf.ptr)
+            GLPGetProgramInfoLog(.program, 512, null, buf.ptr)
             printf("GLProgram Link Error: %s\n", buf.ptr)
         }
     }
 
     void bind() {
-        glUseProgram(.program)
+        GLPUseProgram(.program)
     }
 }
 
@@ -71,15 +71,15 @@ class GLTexture {
     static int DEPTHSTENCIL = 4
 
     this(Image img) {
-        glGenTextures(1, &.id)
-        glBindTexture(GL_TEXTURE_2D, .id)
+        GLPGenTextures(1, &.id)
+        GLPBindTexture(GL_TEXTURE_2D, .id)
         .w = img.width()
         .h = img.height()
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 
+        GLPTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+        GLPTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+        GLPTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
+        GLPTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
+        GLPTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 
         img.width(), img.height(), 0, GL_BGRA, GL_UNSIGNED_BYTE, 
         img.pixels)
         .kind = RGBA8
@@ -106,15 +106,15 @@ class GLTexture {
 
         GLTexture tex = new GLTexture
         tex.kind = kind
-        glGenTextures(1, &tex.id)
-        glBindTexture(GL_TEXTURE_2D, tex.id)
+        GLPGenTextures(1, &tex.id)
+        GLPBindTexture(GL_TEXTURE_2D, tex.id)
         tex.w = w
         tex.h = h
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
-        glTexImage2D(GL_TEXTURE_2D, 0, iformat, 
+        GLPTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+        GLPTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+        GLPTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
+        GLPTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
+        GLPTexImage2D(GL_TEXTURE_2D, 0, iformat, 
         w, h, 0, format, type, 
         null)
         return tex
@@ -131,18 +131,18 @@ class GLMesh {
     uint nelems
 
     this(Mesh mesh) {
-        glGenBuffers(1, &.vbuffer)
-        glGenBuffers(1, &.ibuffer)
-        glBindBuffer(GL_ARRAY_BUFFER, .vbuffer)
+        GLPGenBuffers(1, &.vbuffer)
+        GLPGenBuffers(1, &.ibuffer)
+        GLPBindBuffer(GL_ARRAY_BUFFER, .vbuffer)
 
-        glBufferData(GL_ARRAY_BUFFER, 
+        GLPBufferData(GL_ARRAY_BUFFER, 
             MeshVertex.sizeof * mesh.verts.size,
             mesh.verts.ptr, 
             GL_STATIC_DRAW)
 
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, .ibuffer)
+        GLPBindBuffer(GL_ELEMENT_ARRAY_BUFFER, .ibuffer)
 
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, 
+        GLPBufferData(GL_ELEMENT_ARRAY_BUFFER, 
             MeshFace.sizeof * mesh.faces.size,
             mesh.faces.ptr, 
             GL_STATIC_DRAW)
@@ -151,14 +151,14 @@ class GLMesh {
     }
 
     void bind() {
-        glBindBuffer(GL_ARRAY_BUFFER, .vbuffer)
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, .ibuffer)
+        GLPBindBuffer(GL_ARRAY_BUFFER, .vbuffer)
+        GLPBindBuffer(GL_ELEMENT_ARRAY_BUFFER, .ibuffer)
     }
 
     void draw() {
-        //glBindBuffer(GL_ARRAY_BUFFER, .vbuffer)
-        //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, .ibuffer)
-        glDrawElements(GL_TRIANGLES, .nelems, GL_UNSIGNED_SHORT, null)
+        //GLPBindBuffer(GL_ARRAY_BUFFER, .vbuffer)
+        //GLPBindBuffer(GL_ELEMENT_ARRAY_BUFFER, .ibuffer)
+        GLPDrawElements(GL_TRIANGLES, .nelems, GL_UNSIGNED_SHORT, null)
     }
 }
 
@@ -169,7 +169,7 @@ class GLFramebuffer {
     uint[10] TARGETS 
 
     this() {
-        glGenFramebuffers(1, &.id)
+        GLPGenFramebuffers(1, &.id)
         .ntargets = 0
 
         for(int i = 0; i < 10; i++) {
@@ -178,22 +178,22 @@ class GLFramebuffer {
     }
 
     void bind() {
-        glBindFramebuffer(GL_FRAMEBUFFER, .id)
-        glDrawBuffers(.ntargets, .TARGETS.ptr)
+        GLPBindFramebuffer(GL_FRAMEBUFFER, .id)
+        GLPDrawBuffers(.ntargets, .TARGETS.ptr)
     }
 
     void addTarget(GLTexture t) {
-        glBindFramebuffer(GL_FRAMEBUFFER, .id)
+        GLPBindFramebuffer(GL_FRAMEBUFFER, .id)
 
         if(t.kind == 0 or t.kind == 1 or t.kind == 2) {
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + .ntargets,
+            GLPFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + .ntargets,
                 GL_TEXTURE_2D, t.id, null)
             .ntargets++
         } else if(t.kind == 3) {
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+            GLPFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
                 GL_TEXTURE_2D, t.id, null)
         } else if(t.kind == 4) {
-            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
+            GLPFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
                 GL_TEXTURE_2D, t.id, null)
         }
     }
@@ -219,6 +219,8 @@ class GLDrawDevice {
     }
 
     this(int w, int h) {
+        GLPinit();
+
         if(!instance) instance = this
 
         if(!.quad) {
@@ -237,13 +239,20 @@ class GLDrawDevice {
         .mainBuffer.addTarget(.normalTexture)
         .mainBuffer.addTarget(.depthTexture)
 
-        glClearColor(0.0f, 0.0f, 0.0f, 0.0f)
-        glEnable(GL_TEXTURE_2D)
-        glDisable(GL_BLEND)
-        //glEnable(GL_CULL_FACE)
-        glEnable(GL_DEPTH_TEST)
-        glDisable(GL_SCISSOR_TEST)
+        GLPFrontFace(GL_CW)
 
+        GLPClearColor(0.0f, 0.0f, 0.0f, 0.0f)
+        GLPEnable(GL_TEXTURE_2D)
+        GLPDisable(GL_BLEND)
+        //GLPEnable(GL_CULL_FACE)
+        GLPEnable(GL_DEPTH_TEST)
+        GLPDisable(GL_SCISSOR_TEST)
+
+    }
+
+    void cullFaces(bool b) {
+        if(b) GLPEnable(GL_CULL_FACE)
+        else GLPDisable(GL_CULL_FACE)
     }
 
     GLMesh getQuad() return .quad
@@ -253,22 +262,22 @@ class GLDrawDevice {
     }
 
     void bindStandardAttributes(GLProgram program) {
-        GLint pos = glGetAttribLocation(program.program, "position")
-        GLint norm = glGetAttribLocation(program.program, "normal")
-        GLint uv = glGetAttribLocation(program.program, "uv")
+        GLint pos = GLPGetAttribLocation(program.program, "position")
+        GLint norm = GLPGetAttribLocation(program.program, "normal")
+        GLint uv = GLPGetAttribLocation(program.program, "uv")
         if(pos >= 0) {
-            glEnableVertexAttribArray(pos)
-            glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 32, null)
+            GLPEnableVertexAttribArray(pos)
+            GLPVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 32, null)
         }
 
         if(norm >= 0) {
-            glEnableVertexAttribArray(norm)
-            glVertexAttribPointer(norm, 3, GL_SHORT, GL_TRUE, 32, void^: 12)
+            GLPEnableVertexAttribArray(norm)
+            GLPVertexAttribPointer(norm, 3, GL_SHORT, GL_TRUE, 32, void^: 12)
         }
 
         if(uv >= 0) {
-            glEnableVertexAttribArray(uv)
-            glVertexAttribPointer(uv, 2, GL_UNSIGNED_SHORT, GL_TRUE, 32, void^: 18)
+            GLPEnableVertexAttribArray(uv)
+            GLPVertexAttribPointer(uv, 2, GL_UNSIGNED_SHORT, GL_TRUE, 32, void^: 18)
         }
     }
 
@@ -288,25 +297,25 @@ class GLDrawDevice {
 
         .bindStandardAttributes(program)
 
-        glUniform1i(glGetUniformLocation(program.program, "t_color"), 0)
+        GLPUniform1i(GLPGetUniformLocation(program.program, "t_color"), 0)
 
         mat4 persp = getFrustumMatrix(-1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 10000)
         mat4 matrix = persp.mul(matrix)
 
-        glUniformMatrix4fv(glGetUniformLocation(program.program, "matrix"), 1, GL_TRUE, matrix.ptr())
+        GLPUniformMatrix4fv(GLPGetUniformLocation(program.program, "matrix"), 1, GL_TRUE, matrix.ptr())
 
         mesh.draw()
     }
 
     void runSimpleProgram(GLMesh mesh, GLTexture tex, mat4 mat) {
-        glViewport(0, 0, .w, .h)
+        GLPViewport(0, 0, .w, .h)
         static GLProgram program
 
         if(!program) {
             program = new GLProgram(pack "glsl/simple.vs", pack "glsl/simple.fs")
         }
 
-        glBindFramebuffer(GL_FRAMEBUFFER, 0)
+        GLPBindFramebuffer(GL_FRAMEBUFFER, 0)
 
         program.bind()
         mesh.bind()
@@ -315,14 +324,14 @@ class GLDrawDevice {
         
         .bindStandardAttributes(program)
 
-        glUniform1i(glGetUniformLocation(program.program, "tex"), 0)
-        glUniform1i(glGetUniformLocation(program.program, "crazy"), .crazy)
+        GLPUniform1i(GLPGetUniformLocation(program.program, "tex"), 0)
+        GLPUniform1i(GLPGetUniformLocation(program.program, "crazy"), .crazy)
 
         mat4 persp = getFrustumMatrix(-1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 10000)
         mat4 matrix = persp.mul(mat)
 
-        glUniformMatrix4fv(glGetUniformLocation(program.program, "matrix"), 1, GL_TRUE, matrix.ptr())
-        glUniform1f(glGetUniformLocation(program.program, "tick"), .tick)
+        GLPUniformMatrix4fv(GLPGetUniformLocation(program.program, "matrix"), 1, GL_TRUE, matrix.ptr())
+        GLPUniform1f(GLPGetUniformLocation(program.program, "tick"), .tick)
 
         mesh.draw()
     }
@@ -344,14 +353,14 @@ class GLDrawDevice {
         
         .bindStandardAttributes(program)
 
-        glUniform1i(glGetUniformLocation(program.program, "tex"), 0)
-        glUniform1i(glGetUniformLocation(program.program, "crazy"), .crazy)
+        GLPUniform1i(GLPGetUniformLocation(program.program, "tex"), 0)
+        GLPUniform1i(GLPGetUniformLocation(program.program, "crazy"), .crazy)
 
         mat4 persp = getFrustumMatrix(-1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 10000)
         mat4 matrix = persp.mul(mat)
 
-        glUniformMatrix4fv(glGetUniformLocation(program.program, "matrix"), 1, GL_TRUE, matrix.ptr())
-        glUniform1f(glGetUniformLocation(program.program, "tick"), .tick)
+        GLPUniformMatrix4fv(GLPGetUniformLocation(program.program, "matrix"), 1, GL_TRUE, matrix.ptr())
+        GLPUniform1f(GLPGetUniformLocation(program.program, "tick"), .tick)
 
         mesh.draw()
     }
@@ -362,18 +371,18 @@ class GLDrawDevice {
 
     void clearBuffer() {
         .mainBuffer.bind()
-        glClear(GL_COLOR_BUFFER_BIT)
-        glClear(GL_DEPTH_BUFFER_BIT)
+        GLPClear(GL_COLOR_BUFFER_BIT)
+        GLPClear(GL_DEPTH_BUFFER_BIT)
     }
 
     void clear() {
-        glBindFramebuffer(GL_FRAMEBUFFER, 0)
-        glClear(GL_COLOR_BUFFER_BIT)
-        glClear(GL_DEPTH_BUFFER_BIT)
+        GLPBindFramebuffer(GL_FRAMEBUFFER, 0)
+        GLPClear(GL_COLOR_BUFFER_BIT)
+        GLPClear(GL_DEPTH_BUFFER_BIT)
     }
 
     void clearDepth() {
-        glClear(GL_DEPTH_BUFFER_BIT)
+        GLPClear(GL_DEPTH_BUFFER_BIT)
     }
 }
 

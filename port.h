@@ -1,0 +1,40 @@
+#include <GL/glew.h>
+
+void GLPinit();
+
+void GLPViewport(int x, int y, int w, int h);
+int GLPCreateProgram();
+int GLPCreateShader(int t);
+void GLPShaderSource(int sh, int c, const char **str, const int *len);
+void GLPCompileShader(int s);
+void GLPGetShaderiv(int sh, int pnm, int *p);
+void GLPGetShaderInfoLog(int sh, int max, int *len, char *log);
+void GLPAttachShader(int prog, int sdr);
+void GLPLinkProgram(int prog);
+void GLPGetProgramiv(int prg, int pnm, int *prm);
+void GLPUseProgram(int prg);
+void GLPGetProgramInfoLog(int prg, int max, int *len, char *log);
+void GLPGenTextures(int n, unsigned *t);
+void GLPBindTexture(int targ, int tex);
+void GLPTexParameteri(int targ, int pnm, int param);
+void GLPTexImage2D(int targ, int lvl, int ifmt, int w, int h, int border, int format, int type, const void *data);
+void GLPGenBuffers(int n, unsigned *b);
+void GLPBindBuffer(int n, int b);
+void GLPBufferData(int t, int s, const void *d, int u);
+void GLPDrawElements(int m, int c, int t, const void *ind);
+void GLPGenFramebuffers(int n, unsigned *ids);
+void GLPBindFramebuffer(int t, int fb);
+void GLPDrawBuffers(int n, unsigned *buf);
+void GLPFramebufferTexture2D(int fb, int attach, int textarg, int tex, int lvl);
+void GLPFrontFace(int m);
+void GLPEnable(int n);
+void GLPDisable(int n);
+int GLPGetAttribLocation(int prg, const char *nm);
+void GLPEnableVertexAttribArray(int i);
+void GLPVertexAttribPointer(int i, int sz, int ty, int norm, int stride, const void *ptr);
+void GLPUniform1i(int loc, int v);
+void GLPUniform1f(int loc, float v);
+void GLPUniformMatrix4fv(int loc, int cnt, int trans, const float *val);
+int GLPGetUniformLocation(int prg, const char *nm);
+void GLPClear(int msk);
+void GLPClearColor(float r, float g, float b, float a);
