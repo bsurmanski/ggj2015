@@ -7,7 +7,7 @@ import "vec.wl"
 import "cookie.wl"
 
 use "importc"
-import(C) "GL/gl.h"
+import(C) "port.h"
 
 class Title {
     GLTexture titleName
@@ -26,7 +26,7 @@ class Title {
     void draw() {
         GLDrawDevice dev = GLDrawDevice.getInstance()
         dev.runTitleProgram(dev.getQuad(), .titleName, mat4())
-        glClear(GL_DEPTH_BUFFER_BIT)
+        GLPClear(GL_DEPTH_BUFFER_BIT)
         mat4 view = mat4()
         view = view.translate(vec4(0, 0, -5, 0))
         .cookie.draw(view)

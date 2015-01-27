@@ -20,9 +20,9 @@ class GLProgram {
     GLuint fshader
 
     this(char^ vsrc, char^ fsrc) {
-        .program = glCreateProgram()
-        .vshader = glCreateShader(GL_VERTEX_SHADER)
-        .fshader = glCreateShader(GL_FRAGMENT_SHADER)
+        .program = GLPCreateProgram()
+        .vshader = GLPCreateShader(GL_VERTEX_SHADER)
+        .fshader = GLPCreateShader(GL_FRAGMENT_SHADER)
         GLPShaderSource(.vshader, 1, &vsrc, null)
         GLPShaderSource(.fshader, 1, &fsrc, null)
         GLPCompileShader(.vshader)
@@ -121,7 +121,7 @@ class GLTexture {
     }
 
     void bind() {
-        glBindTexture(GL_TEXTURE_2D, .id)
+        GLPBindTexture(GL_TEXTURE_2D, .id)
     }
 }
 
@@ -284,7 +284,7 @@ class GLDrawDevice {
     void runMeshProgram(GLMesh mesh, GLTexture tex, mat4 matrix) {
         static GLProgram program 
 
-        glViewport(0, 0, .w/4, .h/4)
+        GLPViewport(0, 0, .w/4, .h/4)
         .mainBuffer.bind()
 
         if(!program) {
@@ -337,7 +337,7 @@ class GLDrawDevice {
     }
 
     void runTitleProgram(GLMesh mesh, GLTexture tex, mat4 mat) {
-        glViewport(0, 0, .w/4, .h/4)
+        GLPViewport(0, 0, .w/4, .h/4)
         static GLProgram program
 
         if(!program) {

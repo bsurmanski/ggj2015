@@ -56,7 +56,7 @@ class GirlDuck : Entity {
     void update(float dt) {
         static float tick
         bool inflection = cos(tick * 20.0f) < 0.0f and cos((tick + dt) * 20.0f) > 0.0f
-        float targety = fabsf(sin(tick * 10.0f)) / 4.0f
+        float targety = fabs(sin(tick * 10.0f)) / 4.0f
         tick += dt
 
         .timer -= dt

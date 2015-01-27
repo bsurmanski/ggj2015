@@ -78,7 +78,7 @@ class DuckMan : Entity {
 
         float targety = 0.0f
         if(.moved) {
-            targety = fabsf(sin(tick * 10.0f)) / 4.0f
+            targety = fabs(sin(tick * 10.0f)) / 4.0f
         }
         .position.v[1] = (.position.v[1] + (targety - .position.v[1]) * 0.6f)
         if(inflection and .moved) {
