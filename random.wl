@@ -1,5 +1,5 @@
 
-undecorated float floorf(float f);
+undecorated double floor(double f);
 
 uint32 randomInt() {
     MersenneTwister MT = MersenneTwister.getInstance()
@@ -93,7 +93,7 @@ class MersenneTwister {
     }
 
     uint32 getInt(uint max) {
-        return floorf(.getFloat() * max)
+        return floor(.getFloat() * max)
     }
 
     // float between [0, 1]

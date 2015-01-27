@@ -96,7 +96,7 @@ void input() {
     }
 
     if(whereAreWe == TITLE) {
-        if(keystate[SDLK_SPACE]) {
+        if(keystate[SDLK_SPACE] and !SPACE_DOWN) {
             whereAreWe = INSTRUCTIONS 
         }
     } else if(whereAreWe == INSTRUCTIONS) {

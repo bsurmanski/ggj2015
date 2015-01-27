@@ -1,11 +1,11 @@
 import "vec.wl"
 
-undecorated float fabsf(float x);
+undecorated double fabs(double x);
 
 float box_dim_mtd(float apos, float adim, float bpos, float bdim) {
     float d1 = apos - (bpos + bdim / 2.0f) //dist of A's left point to B center
     float d2 = (apos + adim) - (bpos + bdim / 2.0f) // dist of A's right point to B center
-    if(fabsf(d1) > fabsf(d2)) {
+    if(fabs(d1) > fabs(d2)) {
         return (bpos + bdim) - apos
     }
     //else
