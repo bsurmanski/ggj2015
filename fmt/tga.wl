@@ -15,7 +15,7 @@ const int ITYPE_RLEBW = 11
 const int DISCR_ALPHA_MASK = 0x0F
 const int DISCR_DIREC_MASK = 0x40
 
-const int RLE_REPEAT_MASK = 0x7F
+const int RLE_REPEAT_MASK = 127
 const int RLE_FLAG_MASK = 0x80
 
 struct TGAImageSpec {
@@ -88,41 +88,33 @@ Image loadTGA(InputInterface file) {
             return null
         }
 
-        if(head.hasRLE()) {
-            printf("TGA: RLE not yet supported\n")
-        }
-
         uint8 nrepeat = 0
         uint8 rle_flag = 0
         int bpp = head.pixelSize()
         int sz = head.imageSize() //XXX error if inlined in new uint8[sz]
         uint8^ pixels = new uint8[sz]
-        uint8^ pxl_itr = pixels
 
         int pixelid = 0
         for(int j = 0; j < head.height(); j++) {
             for(int i = 0; i < head.width(); i++) {
-                /*
                 if(nrepeat == 0 && head.hasRLE()) {
                     uint8 rle_pkt;
                     file.read(&rle_pkt, 1, 1)
                     rle_flag = rle_pkt & RLE_FLAG_MASK
                     nrepeat = rle_pkt & RLE_REPEAT_MASK
+                    file.read(&pixels[pixelid], head.pixelSize(), 1)
+                    pixelid += bpp
                     continue
                 }
 
                 if(rle_flag) {
-                    memcpy(pxl_itr, &pxl_itr[-bpp], bpp)
+                    memcpy(&pixels[pixelid], &pixels[pixelid-bpp], bpp)
                 } else {
+                    file.read(&pixels[pixelid], head.pixelSize(), 1)
                 }
 
                 nrepeat--
-                pxl_itr = &pxl_itr[bpp]
-                */
-
-                file.read(&pixels[pixelid], head.pixelSize(), 1)
-                pixelid += head.pixelSize()
-                //^(int^: &pixels[(i + j * head.width()) * head.pixelSize()]) = j * 10
+                pixelid += bpp
             }
         }
 
