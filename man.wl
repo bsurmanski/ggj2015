@@ -1,4 +1,5 @@
 import "gl.wl"
+import "drawDevice.wl"
 import "entity.wl"
 import "fmt/tga.wl"
 import "fmt/mdl.wl"

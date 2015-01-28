@@ -6,6 +6,7 @@ import(C) "port.h"
 import "image.wl"
 import "fmt/tga.wl"
 import "file.wl"
+import "drawDevice.wl"
 import "gl.wl"
 import "sdl.wl"
 import "mesh.wl"
@@ -86,10 +87,20 @@ void init() {
 
 void input() {
     SDL_PumpEvents()
+
+    //XXX hack because SDL_Event is a union which wlc currently doesnt support
+    char[128] event
+    while(SDL_PollEvent(void^: event.ptr)) {
+        if(event[0] == SDL_QUIT) {
+            running = false
+        }
+    }
+
     uint8^ keystate = SDL_GetKeyState(null)
 
     static bool SPACE_DOWN
     static bool X_DOWN
+    static bool Z_DOWN
 
     if(keystate[SDLK_a]) man.scale = 1.5
     if(keystate[SDLK_ESCAPE]) {
@@ -140,10 +151,15 @@ void input() {
     GLDrawDevice dev = GLDrawDevice.getInstance()
     if(keystate[SDLK_x] and !X_DOWN) {
         dev.crazy = !dev.crazy
+    } 
+
+    if(keystate[SDLK_z] and !Z_DOWN) {
+        dev.boring = !dev.boring
     }
 
     SPACE_DOWN = keystate[SDLK_SPACE]
     X_DOWN = keystate[SDLK_x]
+    Z_DOWN = keystate[SDLK_z]
 }
 
 void update(float dt) {
