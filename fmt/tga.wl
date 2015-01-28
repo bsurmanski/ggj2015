@@ -15,7 +15,7 @@ const int ITYPE_RLEBW = 11
 const int DISCR_ALPHA_MASK = 0x0F
 const int DISCR_DIREC_MASK = 0x40
 
-const int RLE_REPEAT_MASK = 127
+const int RLE_REPEAT_MASK = 0x7f
 const int RLE_FLAG_MASK = 0x80
 
 struct TGAImageSpec {

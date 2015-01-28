@@ -45,7 +45,7 @@ class Grub : Entity {
         .position.v[2] = randomFloat() * 20.0f - 10.0f
     }
 
-    float nummies() return 0.07f
+    float nummies() return 0.06f
 
     void update(float dt) {
         .timer -= dt

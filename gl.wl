@@ -284,8 +284,8 @@ class GLDrawDevice {
     void runMeshProgram(GLMesh mesh, GLTexture tex, mat4 matrix) {
         static GLProgram program 
 
-        GLPViewport(0, 0, .w/4, .h/4)
         .mainBuffer.bind()
+        GLPViewport(0, 0, .w/4, .h/4)
 
         if(!program) {
             program = new GLProgram(pack "glsl/mesh.vs", pack "glsl/mesh.fs")
@@ -308,14 +308,13 @@ class GLDrawDevice {
     }
 
     void runSimpleProgram(GLMesh mesh, GLTexture tex, mat4 mat) {
+        GLPBindFramebuffer(GL_FRAMEBUFFER, 0)
         GLPViewport(0, 0, .w, .h)
         static GLProgram program
 
         if(!program) {
             program = new GLProgram(pack "glsl/simple.vs", pack "glsl/simple.fs")
         }
-
-        GLPBindFramebuffer(GL_FRAMEBUFFER, 0)
 
         program.bind()
         mesh.bind()
@@ -337,6 +336,7 @@ class GLDrawDevice {
     }
 
     void runTitleProgram(GLMesh mesh, GLTexture tex, mat4 mat) {
+        .mainBuffer.bind()
         GLPViewport(0, 0, .w/4, .h/4)
         static GLProgram program
 
@@ -344,7 +344,6 @@ class GLDrawDevice {
             program = new GLProgram(pack "glsl/title.vs", pack "glsl/title.fs")
         }
 
-        .mainBuffer.bind()
 
         program.bind()
         mesh.bind()
@@ -370,18 +369,21 @@ class GLDrawDevice {
     }
 
     void clearBuffer() {
+        static int err
+        if(!err) {
+            err = GLPGetError()
+            if(err) printf("GLERROR: %d\n", err)
+        }
         .mainBuffer.bind()
+        GLPViewport(0, 0, .w/4, .h/4)
         GLPClear(GL_COLOR_BUFFER_BIT)
         GLPClear(GL_DEPTH_BUFFER_BIT)
     }
 
     void clear() {
         GLPBindFramebuffer(GL_FRAMEBUFFER, 0)
+        GLPViewport(0, 0, .w, .h)
         GLPClear(GL_COLOR_BUFFER_BIT)
-        GLPClear(GL_DEPTH_BUFFER_BIT)
-    }
-
-    void clearDepth() {
         GLPClear(GL_DEPTH_BUFFER_BIT)
     }
 }

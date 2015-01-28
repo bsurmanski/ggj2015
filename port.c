@@ -150,3 +150,7 @@ void GLPClear(int msk) {
 void GLPClearColor(float r, float g, float b, float a) {
     glClearColor(r, g, b, a);
 }
+
+int GLPGetError() {
+    return glGetError();
+}

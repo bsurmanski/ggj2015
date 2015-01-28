@@ -38,3 +38,4 @@ void GLPUniformMatrix4fv(int loc, int cnt, int trans, const float *val);
 int GLPGetUniformLocation(int prg, const char *nm);
 void GLPClear(int msk);
 void GLPClearColor(float r, float g, float b, float a);
+int GLPGetError();

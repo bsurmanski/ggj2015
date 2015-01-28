@@ -22,7 +22,7 @@ class Crumb : Entity {
     
     bool isDead() return .dead
 
-    float nummies() return 0.01
+    float nummies() return 0.005
 
     this() {
         if(!mesh) {
@@ -66,7 +66,7 @@ class Crumb : Entity {
 }
 
 void initCrumbs() {
-    for(int i = 0; i < 20; i++) {
+    for(int i = 0; i < 40; i++) {
         (Entity.add(new Crumb()))
     }
 }
