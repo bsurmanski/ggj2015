@@ -101,6 +101,7 @@ void input() {
     static bool SPACE_DOWN
     static bool X_DOWN
     static bool Z_DOWN
+    static bool Q_DOWN
 
     if(keystate[SDLK_a]) man.scale = 1.5
     if(keystate[SDLK_ESCAPE]) {
@@ -157,9 +158,14 @@ void input() {
         dev.boring = !dev.boring
     }
 
+    if(keystate[SDLK_q] and !Q_DOWN) {
+        dev.drawHitbox = !dev.drawHitbox
+    }
+
     SPACE_DOWN = keystate[SDLK_SPACE]
     X_DOWN = keystate[SDLK_x]
     Z_DOWN = keystate[SDLK_z]
+    Q_DOWN = keystate[SDLK_q]
 }
 
 void update(float dt) {
@@ -193,6 +199,7 @@ void update(float dt) {
 
             if(cookie.isDead()) {
                 whereAreWe = WIN
+                cookie = null
             }
         }
 

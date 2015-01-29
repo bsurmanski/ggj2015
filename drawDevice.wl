@@ -3,12 +3,17 @@ import(C) "port.h"
 import "gl.wl"
 import "vec.wl"
 import "mesh.wl"
+import "image.wl"
 import "fmt/mdl.wl"
+import "fmt/tga.wl"
 import "file.wl"
+import "collision.wl"
 
 class GLDrawDevice {
 
     static GLMesh quad
+    static GLMesh cube
+    static GLTexture white
     static GLDrawDevice instance
 
     int w
@@ -16,6 +21,7 @@ class GLDrawDevice {
     float tick
     bool crazy
     bool boring
+    bool drawHitbox 
 
     GLFramebuffer mainBuffer 
     GLTexture colorTexture
@@ -32,8 +38,18 @@ class GLDrawDevice {
         if(!instance) instance = this
 
         if(!.quad) {
-            Mesh mesh = loadMdl(new StringFile(pack "res/quad2.mdl"))
+            Mesh mesh = loadMdl(new StringFile(pack "res/unit_quad.mdl"))
             .quad = new GLMesh(mesh)
+        }
+        
+        if(!.cube) {
+            Mesh mesh = loadMdl(new StringFile(pack "res/unit_cube.mdl"))
+            .cube = new GLMesh(mesh)
+        }
+
+        if(!.white) {
+            Image i = loadTGA(new StringFile(pack "res/white.tga"))
+            .white = new GLTexture(i)
         }
 
         .w = w
@@ -113,6 +129,40 @@ class GLDrawDevice {
         GLPUniformMatrix4fv(GLPGetUniformLocation(program.program, "matrix"), 1, GL_TRUE, matrix.ptr())
 
         mesh.draw()
+    }
+
+    void drawBoundingBox(Box3 box, mat4 view) {
+        static GLProgram program 
+
+        .mainBuffer.bind()
+        GLPViewport(0, 0, .w/4, .h/4)
+
+        if(!program) {
+            program = new GLProgram(pack "glsl/mesh.vs", pack "glsl/mesh.fs")
+        }
+
+        program.bind()
+        .white.bind()
+        .cube.bind()
+
+        .bindStandardAttributes(program)
+
+        GLPUniform1i(GLPGetUniformLocation(program.program, "t_color"), 0)
+
+        mat4 matrix = mat4()
+        matrix = matrix.scale(box.dim[0]/2.0f, box.dim[1]/2.0f, box.dim[2]/2.0f)
+        matrix = matrix.translate(box.getCenter())
+
+        matrix = view.mul(matrix)
+
+        mat4 persp = getFrustumMatrix(-1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 10000)
+        matrix = persp.mul(matrix)
+
+        GLPUniformMatrix4fv(GLPGetUniformLocation(program.program, "matrix"), 1, GL_TRUE, matrix.ptr())
+
+        GLPPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+        .cube.draw()
+        GLPPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
     }
 
     void runSimpleProgram(GLMesh mesh, GLTexture tex, mat4 mat) {

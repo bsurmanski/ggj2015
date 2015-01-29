@@ -39,3 +39,4 @@ int GLPGetUniformLocation(int prg, const char *nm);
 void GLPClear(int msk);
 void GLPClearColor(float r, float g, float b, float a);
 int GLPGetError();
+void GLPPolygonMode(int f, int m);

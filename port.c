@@ -154,3 +154,7 @@ void GLPClearColor(float r, float g, float b, float a) {
 int GLPGetError() {
     return glGetError();
 }
+
+void GLPPolygonMode(int f, int m) {
+    glPolygonMode(f, m);
+}

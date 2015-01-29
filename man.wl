@@ -117,16 +117,25 @@ class DuckMan : Entity {
         .moved = true
     }
 
+    float getScale() return .scale
+
     void draw(mat4 view) {
         GLDrawDevice dev = GLDrawDevice.getInstance()
+
+        float scale = .getScale()
 
         mat4 mat = mat4()
         vec4 axis = vec4(0, 1, 0, 0)
         mat = mat.rotate(.rotation, axis)
-        mat = mat.scale(.scale, .scale, .scale)
+        mat = mat.scale(scale, scale, scale)
         mat = mat.translate(.position)
         mat = view.mul(mat)
 
-        dev.runMeshProgram(.mesh, .texture, mat)
+        dev.runMeshProgram(.getMesh(), .getTexture(), mat)
+
+        if(dev.drawHitbox) dev.drawBoundingBox(.getHitbox(), view)
     }
+
+    GLMesh getMesh() return mesh
+    GLTexture getTexture() return texture
 }

@@ -52,18 +52,12 @@ class Carrot : Entity {
 
     float nummies() return 0.15
 
-    Box3 getHitbox() {
-        vec4 dim = vec4(3.3, 0.98, 0.86, 0)
-        return Box3(.position, dim)
-    }
+    GLMesh getMesh() return mesh
+    GLTexture getTexture() return texture
 
-    void draw(mat4 view) {
-        GLDrawDevice dev = GLDrawDevice.getInstance()
-        mat4 mat = mat4()
-        mat = mat.rotate(.rotation, vec4(0, 1, 0, 0))
-        mat = mat.translate(.position)
-        mat = view.mul(mat)
-        dev.runMeshProgram(.mesh, .texture, mat)
+    Box3 getHitbox() {
+        vec4 dim = vec4(1.0, 0.98, 0.86, 0)
+        return Box3(.position, dim)
     }
 }
 

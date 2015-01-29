@@ -57,12 +57,6 @@ class Shroom : Entity {
         return Box3(.position, dim)
     }
 
-    void draw(mat4 view) {
-        GLDrawDevice dev = GLDrawDevice.getInstance()
-        mat4 mat = mat4()
-        mat = mat.rotate(.rotation, vec4(0, 1, 0, 0))
-        mat = mat.translate(.position)
-        mat = view.mul(mat)
-        dev.runMeshProgram(.mesh, .texture, mat)
-    }
+    GLMesh getMesh() return .mesh
+    GLTexture getTexture() return .texture
 }

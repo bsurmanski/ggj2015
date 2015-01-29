@@ -29,25 +29,28 @@ struct Box2 {
     }*/
 
     this(vec4 p, vec4 d) {
-        .pos[0] = p.v[0]
-        .pos[1] = p.v[1]
+        .pos[0] = p.v[0] - d.v[0] / 2.0f
+        .pos[1] = p.v[1] - d.v[1] / 2.0f
 
         .dim[0] = d.v[0]
         .dim[1] = d.v[1]
     }
 
-    void setPosition(float[2] p) {
+    void setPosition(float[2] p)
         .pos = p
-    }
 
-    void setDimension(float[2] d) {
+    void setDimension(float[2] d)
         .dim = d
-    }
 
     void setCenter(float[2] c) {
         for(int i = 0; i < 2; i++) {
             .pos[i] = c[i] - .dim[i] / 2.0f
         }
+    }
+    vec4 getCenter() {
+        return vec4(.pos[0] + .dim[0] / 2.0f,
+                    .pos[1] + .dim[1] / 2.0f,
+                    0, 0)
     }
 
     void move(float[2] dv) {
@@ -85,26 +88,30 @@ struct Box3 {
     }
 
     this(vec4 p, vec4 d) {
-        .pos[0] = p.v[0]
-        .pos[1] = p.v[1]
-        .pos[2] = p.v[2]
+        .pos = [p.v[0] - d.v[0] / 2.0f,
+                p.v[1] - d.v[1] / 2.0f,
+                p.v[2] - d.v[2] / 2.0f]
 
         .dim[0] = d.v[0]
         .dim[1] = d.v[1]
         .dim[2] = d.v[2]
     }
 
-    void setPosition(float[3] p) {
+    void setPosition(float[3] p)
         .pos = p
-    }
 
-    void setDimension(float[3] d) {
+    void setDimension(float[3] d)
         .dim = d
+
+    vec4 getCenter() {
+        return vec4(.pos[0] + .dim[0] / 2.0f,
+                    .pos[1] + .dim[1] / 2.0f,
+                    .pos[2] + .dim[2] / 2.0f, 0)
     }
 
     void setCenter(float[3] c) {
         for(int i = 0; i < 3; i++) {
-            .pos[i] = c[i] - .dim[i] / 3.0f
+            .pos[i] = c[i] - .dim[i] / 2.0f
         }
     }
 
@@ -150,17 +157,14 @@ struct Ball2 {
         return rdsq > diff.lensq()
     }
 
-    void scale(float f) {
+    void scale(float f)
         .radius *= f
-    }
 
-    void setCenter(float[2] c) {
+    void setCenter(float[2] c)
         .center = c
-    }
 
-    void setRadius(float r) {
+    void setRadius(float r)
         .radius = r
-    }
 }
 
 struct Ball3 {
@@ -176,19 +180,54 @@ struct Ball3 {
         vec4 c1 = vec4(.center[0], .center[1], .center[2], 0)        
         vec4 c2 = vec4(o.center[0], o.center[2], o.center[3], 0)
         vec4 diff = c1.sub(c2)
-        float rdsq = (.radius + o.radius) * (.radius + o.radius)
+        float rdsq = (.radius * .radius) + (o.radius * o.radius)
         return rdsq > diff.lensq()
     }
 
-    void scale(float f) {
+    void scale(float f)
         .radius *= f
-    }
 
-    void setCenter(float[3] c) {
+    void setCenter(float[3] c)
         .center = c
+
+    void setRadius(float r)
+        .radius = r
+}
+
+struct Pill3 {
+    float[3] position // center position of pill
+    float radius // radius of cylinder and spheres
+    float height // half of the pill height. from center to cylinder top
+
+    this(vec4 p, float r, float h) {
+        .position = [p.v[0], p.v[1], p.v[2]]
+        .radius = r
+        .height = h / 2.0f
     }
 
-    void setRadius(float r) {
-        .radius = r
+    vec4 getCenter() 
+        return vec4(.position[0], .position[1], .position[2], 0)
+
+    bool collides(Pill3 o) {
+        vec4 c1 = .getCenter()
+        vec4 c2 = o.getCenter()
+
+        vec4 diff = c1.sub(c2)
+        float distsq = diff.lensq()
+        if(fabs(c1.v[1] - c2.v[1]) < .height + o.height) {
+            // if pills are side by side, see if sides are hitting
+            return distsq < 
+                   (.radius * .radius) + (o.radius * o.radius)
+        } else if(c1.v[1] > c2.v[1]) {
+            // else if c1 is on top of c2
+            return ((c1.v[1] - .height) - (c2.v[1] + o.height)) <
+                     .radius + o.radius
+        } else {
+            // else if c2 is on top of c1
+            return ((c2.v[1] - o.height) - (c1.v[1] + .height)) <
+                     .radius + o.radius
+        }
+
+        return false
     }
 }
