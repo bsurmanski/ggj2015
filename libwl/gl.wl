@@ -3,12 +3,11 @@ use "importc"
 import(C) "SDL/SDL.h"
 import(C) "port.h"
 
-import "vec.wl"
-import "image.wl"
-import "mesh.wl"
-import "fmt/mdl.wl"
-import "file.wl"
-import "vec.wl"
+import "libwl/vec.wl"
+import "libwl/image.wl"
+import "libwl/mesh.wl"
+import "libwl/fmt/mdl.wl"
+import "libwl/file.wl"
 
 class GLProgram {
     GLuint program

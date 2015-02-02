@@ -1,5 +1,5 @@
-import "file.wl"
-import "mesh.wl"
+import "libwl/file.wl"
+import "libwl/mesh.wl"
 
 struct MdlHeader {
     uint8[3] magic

@@ -29,8 +29,10 @@ void main(void) {
     } else if(boring) {
         color = texture2D(tex, texco);
     } else {
-        color = texture2D(tex, 
-            vec2(texco.x + texcox * sin(tick*20 + texco.y*20)/100, texco.y));
+        color.r = texture2D(tex, 
+            vec2(texco.x + texcox * sin(tick*10 + texco.y*20)/100, texco.y)).r;
+        color.gba = texture2D(tex, 
+            vec2(texco.x + texcox * sin(tick*20 + texco.y*20)/100, texco.y)).gba;
     }
 
 

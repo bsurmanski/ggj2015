@@ -1,13 +1,13 @@
 use "importc"
 import(C) "port.h"
-import "gl.wl"
-import "vec.wl"
-import "mesh.wl"
-import "image.wl"
-import "fmt/mdl.wl"
-import "fmt/tga.wl"
-import "file.wl"
-import "collision.wl"
+import "libwl/gl.wl"
+import "libwl/vec.wl"
+import "libwl/mesh.wl"
+import "libwl/image.wl"
+import "libwl/fmt/mdl.wl"
+import "libwl/fmt/tga.wl"
+import "libwl/file.wl"
+import "libwl/collision.wl"
 
 class GLDrawDevice {
 

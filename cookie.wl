@@ -1,14 +1,16 @@
-import "gl.wl"
-import "drawDevice.wl"
-import "mesh.wl"
-import "image.wl"
-import "file.wl"
-import "vec.wl"
-import "fmt/mdl.wl"
-import "fmt/tga.wl"
+import "libwl/vec.wl"
+import "libwl/gl.wl"
+import "libwl/mesh.wl"
+import "libwl/image.wl"
+import "libwl/file.wl"
+import "libwl/fmt/mdl.wl"
+import "libwl/fmt/tga.wl"
+import "libwl/collision.wl"
+
 import "entity.wl"
-import "collision.wl"
 import "man.wl"
+
+import "drawDevice.wl"
 
 class Cookie : Entity {
     static GLMesh mesh

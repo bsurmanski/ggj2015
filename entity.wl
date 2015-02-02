@@ -1,7 +1,7 @@
-import "vec.wl"
-import "gl.wl"
+import "libwl/vec.wl"
+import "libwl/gl.wl"
+import "libwl/collision.wl"
 import "drawDevice.wl"
-import "collision.wl"
 
 class Entity {
     vec4 position
@@ -73,7 +73,7 @@ void updateEntities(float dt) {
             Entity del = e
             if(e.prev) e.prev.next = e.next
             if(e.next) e.next.prev = e.prev
-            if(e == Entity.first) (Entity.first = e.next)
+            if(e == Entity.first) Entity.first = e.next
             e = e.next
             delete del
             continue

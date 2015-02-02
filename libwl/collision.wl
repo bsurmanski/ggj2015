@@ -1,4 +1,4 @@
-import "vec.wl"
+import "libwl/vec.wl"
 
 undecorated double fabs(double x);
 

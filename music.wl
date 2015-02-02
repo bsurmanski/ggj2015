@@ -2,7 +2,7 @@ use "importc"
 import(C) "SDL/SDL.h"
 import(C) "SDL/SDL_mixer.h"
 
-import "random.wl"
+import "libwl/random.wl"
 
 Mix_Chunk^ boop1
 Mix_Chunk^ boop2

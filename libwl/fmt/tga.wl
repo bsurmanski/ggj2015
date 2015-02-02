@@ -1,5 +1,5 @@
-import "file.wl"
-import "image.wl"
+import "libwl/file.wl"
+import "libwl/image.wl"
 
 const int CMAP_TRUE = 1
 const int CMAP_FALSE = 0

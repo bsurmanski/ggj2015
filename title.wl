@@ -1,9 +1,9 @@
-import "gl.wl"
+import "libwl/gl.wl"
 import "drawDevice.wl"
-import "fmt/tga.wl"
-import "image.wl"
-import "file.wl"
-import "vec.wl"
+import "libwl/fmt/tga.wl"
+import "libwl/image.wl"
+import "libwl/file.wl"
+import "libwl/vec.wl"
 
 import "cookie.wl"
 
