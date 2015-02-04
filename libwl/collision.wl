@@ -13,9 +13,7 @@ float box_dim_mtd(float apos, float adim, float bpos, float bdim) {
 }
 
 float box_dim_overlap(float apos, float adim, float bpos, float bdim) {
-    return ((apos + adim > bpos) and (apos + adim < bpos + bdim)) or
-           ((bpos + bdim > apos) and (bpos + bdim < apos + adim))
-        
+    return fabs(apos - bpos) < (adim + bdim);
 }
 
 struct Box2 {
@@ -79,40 +77,32 @@ struct Box2 {
 }
 
 struct Box3 {
-    float[3] pos
-    float[3] dim
+    float[3] pos // center position 
+    float[3] rad // half width
 
+    /*
     this(float[3] p, float[3] d) {
         .pos = p
-        .dim = d
-    }
+        .rad = d
+    }*/
 
     this(vec4 p, vec4 d) {
-        .pos = [p.v[0] - d.v[0] / 2.0f,
-                p.v[1] - d.v[1] / 2.0f,
-                p.v[2] - d.v[2] / 2.0f]
-
-        .dim[0] = d.v[0]
-        .dim[1] = d.v[1]
-        .dim[2] = d.v[2]
+        .pos = [p.v[0], p.v[1], p.v[2]]
+        .rad = [d.v[0]/2.0f, d.v[1]/2.0f, d.v[2]/2.0f]
     }
 
     void setPosition(float[3] p)
         .pos = p
 
     void setDimension(float[3] d)
-        .dim = d
+        .rad = d
 
     vec4 getCenter() {
-        return vec4(.pos[0] + .dim[0] / 2.0f,
-                    .pos[1] + .dim[1] / 2.0f,
-                    .pos[2] + .dim[2] / 2.0f, 0)
+        return vec4(.pos[0], .pos[1], .pos[2], 0)
     }
 
     void setCenter(float[3] c) {
-        for(int i = 0; i < 3; i++) {
-            .pos[i] = c[i] - .dim[i] / 2.0f
-        }
+        .pos = c
     }
 
     void move(float[3] dv) {
@@ -123,7 +113,7 @@ struct Box3 {
 
     bool collides(Box3 o) {
         for(int i = 0; i < 3; i++) {
-            if(!box_dim_overlap(.pos[i], .dim[i], o.pos[i], o.dim[i]))
+            if(!box_dim_overlap(.pos[i], .rad[i], o.pos[i], o.rad[i]))
                 return false
         }
 
@@ -134,10 +124,16 @@ struct Box3 {
     vec4 minTranslation(Box3 o) {
         vec4 ret
         for(int i = 0; i < 3; i++) {
-            ret.v[i] = box_dim_mtd(.pos[i], .dim[i], o.pos[i], o.dim[i])
+            ret.v[i] = box_dim_mtd(.pos[i], .rad[i], o.pos[i], o.rad[i])
         }
         return ret
     }
+}
+
+struct OBox3 {
+    float[3] pos // center position 
+    float[3] rad // half width
+    mat4 matrix
 }
 
 struct Ball2 {

@@ -26,6 +26,7 @@ import "shroom.wl"
 
 import "drawDevice.wl"
 
+import "scene.wl"
 import "man.wl"
 import "title.wl"
 
@@ -77,6 +78,7 @@ void init() {
     i = loadTGA(new StringFile(pack "res/lose.tga"))
     lose = new GLTexture(i)
 
+    //loadScene(new StringFile(pack "mouse.scn"))
 
     musicInit()
 
@@ -122,7 +124,7 @@ void input() {
             initCrumbs()
             initCarrots()
             initCliffbars()
-            (Entity.add(new GirlDuck()))
+            Entity.add(new GirlDuck())
             //(Entity.add(new Shroom()))
         }
     } else if(whereAreWe == GAME) {

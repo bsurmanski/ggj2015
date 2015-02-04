@@ -42,7 +42,7 @@ class Cookie : Entity {
 
         DuckMan d = DuckMan.getInstance()
         Box3 dhit = d.getHitbox()
-        if(dhit.collides(.getHitbox())) {
+        if(!.dead and dhit.collides(.getHitbox())) {
             //WIN
             d.eat(this)
             .dead = true

@@ -18,6 +18,7 @@ class Title {
         Image i = loadTGA(new StringFile(pack "res/title.tga"))
         .titleName = new GLTexture(i)
         .cookie = new Cookie()
+        .cookie.dead = true
     }
 
     void update(float dt) {

@@ -150,7 +150,7 @@ class GLDrawDevice {
         GLPUniform1i(GLPGetUniformLocation(program.program, "t_color"), 0)
 
         mat4 matrix = mat4()
-        matrix = matrix.scale(box.dim[0]/2.0f, box.dim[1]/2.0f, box.dim[2]/2.0f)
+        matrix = matrix.scale(box.rad[0], box.rad[1], box.rad[2])
         matrix = matrix.translate(box.getCenter())
 
         matrix = view.mul(matrix)
