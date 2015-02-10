@@ -53,6 +53,14 @@ All sound effects were created with [sfxr](http://www.drpetter.se/project_sfxr.h
 #### License
 The game is licensed under the [MIT Open Source License](http://opensource.org/licenses/MIT).
 
+#### Binaries
+
+[Windows](https://www.amazon.ca/clouddrive/share/Y0V_AoLA_N-l6J349mA9ksHJ0MIKpTjIl_qprsTGBv4)
+
+[OSX](https://www.amazon.ca/clouddrive/share/inDBeNmBslKsHI6MONMiA2ToY8NK9Bp5JAA9BHQDSes)
+
+[Linux](https://www.amazon.ca/clouddrive/share/B2B-sdfagVzuGqfCfDVthLp3Auw0IJmyB_x3mL06awM)
+
 #### Screenshots
 
 ![running around small](/screenshots/small1.png?raw=true)
