@@ -19,14 +19,14 @@ you too! Eat everything in the house to fill your belly!
 
 #### Controls
 
-Arrow Keys to move
-space to start
+* Arrow Keys to move
+* space to start
 
 ##### Other Controls
 
-ESC to exit
-X for crazy mode (cosmetic only)
-Z for a calm screen
+* ESC to exit
+* X for crazy mode (cosmetic only)
+* Z for a calm screen
 
 
 #### Programming Language
@@ -43,8 +43,11 @@ information, view the compiler github page
 [here](https://github.com/bsurmanski/wlc).
 
 #### Art and Assets
+
 All models were created in [Blender](http://blender.org/).
+
 All textures were created in [Gimp](http://www.gimp.org/).
+
 All sound effects were created with [sfxr](http://www.drpetter.se/project_sfxr.html).
 
 #### License
