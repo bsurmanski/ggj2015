@@ -66,3 +66,11 @@ The game is licensed under the [MIT Open Source License](http://opensource.org/l
 ![running around small](/screenshots/small1.png?raw=true)
 
 ![running around large](/screenshots/big1.png?raw=true)
+
+#### Contact
+Please contact me with any feedback you may have, positive or negative.
+
+You can contact me at the following addresses:
+
+email: b.surmanski (AT) gmail (DOT) com
+twitter: bsurmanski
